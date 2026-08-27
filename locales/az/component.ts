@@ -44,7 +44,7 @@ export default {
                     disclaimer: 'Bu bölmə pasientlə işləyən psixoloq/psixoterapevt üçün nəzərdə tutulub. AI tərəfindən yaradılan tövsiyələr klinik qərarı əvəz etmir — yalnız işlək çərçivə və nümunələr təqdim edir, son qərar mütəxəssisin öz mühakiməsinə əsaslanmalıdır.',
                     generateButton: 'Mütəxəssis Tövsiyələri Al',
                     regenerateButton: 'Yenidən Yarat',
-                    loadingMessage: 'Hazırlanır, iki hissədən ibarətdir, bir az vaxt apara bilər...',
+                    loadingMessage: 'Hazırlanır, bir neçə hissədən ibarətdir, bir az vaxt apara bilər...',
                     errorMessage: 'Tövsiyələri yaratmaq alınmadı. Zəhmət olmasa yenidən cəhd edin.',
                 },
                 aiChat: {

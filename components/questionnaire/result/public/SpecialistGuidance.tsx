@@ -116,80 +116,53 @@ export function SpecialistGuidance({
     setGuidance('');
 
     // DeepSeek's "deepseek-chat" model hard-caps a single response at 4096
-    // output tokens outside their (unstable) Beta API - our earlier attempt
-    // to just request more (6000) got silently clamped and cut off mid-
-    // sentence. Split the guidance into two sequential, independently-sized
-    // requests instead, each safely under that ceiling, and concatenate.
+    // output tokens outside their (unstable) Beta API. Two parts (1-3, then
+    // 4-7) still weren't enough - section 4 (4-5 techniques with detailed
+    // steps + example dialogue) alone eats most of a 3800-token budget.
+    // Split into four smaller, independently-sized requests instead, each
+    // covering less ground, and concatenate the streamed results.
     const summary = resultSummary || JSON.stringify(questionnaireResults);
 
-    const part1Az = `Sən təcrübəli klinik psixoloq/psixoterapevt üçün konsultasiya dəstək köməkçisisən. Aşağıda "${questionnaireType}" anketinin nəticələri var:
+    const sectionsAz = [
+      `Sən təcrübəli klinik psixoloq/psixoterapevt üçün konsultasiya dəstək köməkçisisən. Aşağıda "${questionnaireType}" anketinin nəticələri var:\n\n${summary}\n\nBu nəticələrə əsaslanaraq, HƏMİN PASİENTLƏ ÜMUMİ İŞ QURULUŞU üzrə mütəxəssisə ətraflı, konkret və praktik bələdçilik ver (yalnız ilk görüş üçün deyil, bütün müalicə prosesi üçün). Yalnız aşağıdakı 2 bölməni yaz, konkret NÜMUNƏLƏR (dəqiq sual mətnləri) ver, ümumi klişelərdən qaç:\n\n1. VƏZİYYƏTİN KLİNİK ŞƏRHİ — bu nəticələr nəyi göstərir, hansı simptom klasterlərinə diqqət yetirilməlidir.\n2. İLKİN QİYMƏTLƏNDİRMƏ SUALLARI — ilk 1-2 görüşdə vermək üçün 6-8 konkret açıq sual, hər birinin nə üçün soruşulduğunu bir cümlə ilə izah et.\n\nCavabı Azərbaycan dilində, başlıqlarla struktur olaraq ver. Bu 2 bölmədən sonra DAYAN, sonrakı bölmələri yazma.`,
 
-${summary}
+      `Eyni "${questionnaireType}" anketinin nəticələrinə (${summary}) əsaslanaraq, indi YALNIZ aşağıdakı bölməni yaz:\n\n3. MÜALICƏ ÇƏRÇİVƏSİ VƏ ÜMUMİ STRUKTUR — bu profil üçün uyğun terapevtik yanaşma(lar) (məs. KBT, ACT, sxema terapiyası və s. — konkret hansı olduğunu de və niyə), tipik sessiya sayı/tezliyi, mərhələlərin qısa xəritəsi (məs. 1-3-cü sessiyalar nəyə fokuslanır, 4-8-ci sessiyalar nəyə və s.).\n\nCavabı Azərbaycan dilində, "3." başlığı ilə başla. Yalnız bu bölməni yaz, başqasını yazma.`,
 
-Bu nəticələrə əsaslanaraq, HƏMİN PASİENTLƏ ÜMUMİ İŞ QURULUŞU üzrə mütəxəssisə ətraflı, konkret və praktik bələdçilik ver (yalnız ilk görüş üçün deyil, bütün müalicə prosesi üçün). Yalnız aşağıdakı 3 bölməni yaz, hər birində konkret NÜMUNƏLƏR (dəqiq sual mətnləri, dəqiq təlimat cümlələri) ver, ümumi klişelərdən qaç:
+      `Eyni "${questionnaireType}" anketinin nəticələrinə (${summary}) əsaslanaraq, indi YALNIZ aşağıdakı bölməni yaz:\n\n4. KONKRET TEXNİKALAR (ən azı 4-5 texnika) — hər texnika üçün: (a) adı, (b) NECƏ tətbiq olunur — addım-addım, (c) NİYƏ məhz bu pasient profili üçün uyğundur, (d) sessiyada istifadə oluna biləcək konkret nümunə dialoq və ya tapşırıq mətni.\n\nCavabı Azərbaycan dilində, "4." başlığı ilə başla. Yalnız bu bölməni yaz, başqasını yazma.`,
 
-1. VƏZİYYƏTİN KLİNİK ŞƏRHİ — bu nəticələr nəyi göstərir, hansı simptom klasterlərinə diqqət yetirilməlidir.
-2. İLKİN QİYMƏTLƏNDİRMƏ SUALLARI — ilk 1-2 görüşdə vermək üçün 6-8 konkret açıq sual, hər birinin nə üçün soruşulduğunu bir cümlə ilə izah et.
-3. MÜALICƏ ÇƏRÇİVƏSİ VƏ ÜMUMI STRUKTUR — bu profil üçün uyğun terapevtik yanaşma(lar) (məs. KBT, ACT, sxema terapiyası və s. — konkret hansı olduğunu de və niyə), tipik sessiya sayı/tezliyi, mərhələlərin qısa xəritəsi.
+      `Eyni "${questionnaireType}" anketinin nəticələrinə (${summary}) əsaslanaraq, indi YALNIZ aşağıdakı 3 bölməni yaz, konkret nümunələrlə:\n\n5. SESSIYALARARASI TAPŞIRIQLAR (ev tapşırığı) — 3-4 konkret nümunə, hər birinin məqsədi ilə.\n6. RİSK ƏLAMƏTLƏRİ VƏ İZLƏMƏ — bu profildə xüsusilə diqqət ediləcək xəbərdarlıq işarələri, hansı hallarda təcili müdaxilə və ya başqa mütəxəssisə (psixiatr və s.) yönləndirmə lazımdır.\n7. PROQRESİN QİYMƏTLƏNDİRİLMƏSİ — irəliləyişi necə ölçmək (məs. hansı alt-şkalalar, nə vaxt təkrar test).\n\nCavabı Azərbaycan dilində, başlıqlarla struktur olaraq ver. Sonunda: "Bu, klinik qərarı əvəz etmir — mütəxəssisin öz mühakiməsi əsasdır, bu yalnız işlək çərçivə və nümunələr təqdim edir." cümləsini əlavə et.`,
+    ];
 
-Cavabı Azərbaycan dilində, başlıqlarla struktur olaraq ver. Bu 3 bölmədən sonra DAYAN, sonrakı bölmələri yazma.`;
+    const sectionsRu = [
+      `Ты ассистент поддержки консультаций для опытного клинического психолога/психотерапевта. Ниже приведены результаты опросника "${questionnaireType}":\n\n${summary}\n\nНа основе этих результатов дай специалисту подробное, конкретное и практическое руководство по ОБЩЕЙ РАБОТЕ С ЭТИМ ПАЦИЕНТОМ (не только про первую встречу, а про весь процесс работы). Напиши ТОЛЬКО следующие 2 раздела, с конкретными ПРИМЕРАМИ (точные формулировки вопросов), избегай общих клише:\n\n1. КЛИНИЧЕСКАЯ ИНТЕРПРЕТАЦИЯ — что показывают эти результаты, на какие кластеры симптомов обратить внимание.\n2. ВОПРОСЫ ДЛЯ ПЕРВИЧНОЙ ОЦЕНКИ — 6-8 конкретных открытых вопросов для первых 1-2 встреч, с однострочным объяснением цели каждого.\n\nДай ответ на русском языке, структурированно по заголовкам. После этих 2 разделов ОСТАНОВИСЬ, не пиши следующие разделы.`,
 
-    const part2Az = `Eyni "${questionnaireType}" anketinin nəticələrinə (${summary}) əsaslanaraq, indi YALNIZ aşağıdakı 4 bölməni yaz, konkret NÜMUNƏLƏRLƏ, ümumi klişelərdən qaçaraq:
+      `На основе результатов того же опросника "${questionnaireType}" (${summary}), теперь напиши ТОЛЬКО следующий раздел:\n\n3. РАМКА ТЕРАПИИ И ОБЩАЯ СТРУКТУРА — подходящий терапевтический подход(ы) для этого профиля (например, КПТ, ACT, схема-терапия и т.д. — укажи конкретно какой и почему), типичное количество/частота сессий, краткая карта этапов.\n\nОтветь на русском языке, начни с заголовка "3.". Напиши только этот раздел, ничего больше.`,
 
-4. KONKRET TEXNİKALAR (ən azı 4-5 texnika) — hər texnika üçün: (a) adı, (b) NECƏ tətbiq olunur — addım-addım, (c) NİYƏ məhz bu pasient profili üçün uyğundur, (d) sessiyada istifadə oluna biləcək konkret nümunə dialoq və ya tapşırıq mətni.
-5. SESSIYALARARASI TAPŞIRIQLAR (ev tapşırığı) — 3-4 konkret nümunə, hər birinin məqsədi ilə.
-6. RİSK ƏLAMƏTLƏRİ VƏ İZLƏMƏ — bu profildə xüsusilə diqqət ediləcək xəbərdarlıq işarələri, hansı hallarda təcili müdaxilə və ya başqa mütəxəssisə (psixiatr və s.) yönləndirmə lazımdır.
-7. PROQRESİN QİYMƏTLƏNDİRİLMƏSİ — irəliləyişi necə ölçmək (məs. hansı alt-şkalalar, nə vaxt təkrar test).
+      `На основе результатов того же опросника "${questionnaireType}" (${summary}), теперь напиши ТОЛЬКО следующий раздел:\n\n4. КОНКРЕТНЫЕ ТЕХНИКИ (минимум 4-5) — для каждой техники: (а) название, (б) КАК применять — пошагово, (в) ПОЧЕМУ подходит именно этому профилю, (г) конкретный пример диалога или задания для сессии.\n\nОтветь на русском языке, начни с заголовка "4.". Напиши только этот раздел, ничего больше.`,
 
-Cavabı Azərbaycan dilində, başlıqlarla struktur olaraq, konkret və tətbiq edilə bilən şəkildə ver. Bu, klinik qərarı əvəz etmir — mütəxəssisin öz mühakiməsi əsasdır, sən yalnız işlək çərçivə və nümunələr təqdim edirsən.`;
+      `На основе результатов того же опросника "${questionnaireType}" (${summary}), теперь напиши ТОЛЬКО следующие 3 раздела, с конкретными примерами:\n\n5. МЕЖСЕССИОННЫЕ ЗАДАНИЯ (домашние задания) — 3-4 конкретных примера с целью каждого.\n6. ПРИЗНАКИ РИСКА И МОНИТОРИНГ — на что особенно обратить внимание при этом профиле, когда нужно экстренное вмешательство или направление к другому специалисту (психиатру и т.д.).\n7. ОЦЕНКА ПРОГРЕССА — как измерять динамику (какие подшкалы, когда повторное тестирование).\n\nДай ответ на русском языке, структурированно по заголовкам. В конце добавь: "Это не заменяет клиническое решение — суждение специалиста первично, это лишь рабочая основа и примеры."`,
+    ];
 
-    const part1Ru = `Ты ассистент поддержки консультаций для опытного клинического психолога/психотерапевта. Ниже приведены результаты опросника "${questionnaireType}":
-
-${summary}
-
-На основе этих результатов дай специалисту подробное, конкретное и практическое руководство по ОБЩЕЙ РАБОТЕ С ЭТИМ ПАЦИЕНТОМ (не только про первую встречу, а про весь процесс работы). Напиши ТОЛЬКО следующие 3 раздела, в каждом приводи конкретные ПРИМЕРЫ (точные формулировки вопросов, точные фразы инструкций), избегай общих клише:
-
-1. КЛИНИЧЕСКАЯ ИНТЕРПРЕТАЦИЯ — что показывают эти результаты, на какие кластеры симптомов обратить внимание.
-2. ВОПРОСЫ ДЛЯ ПЕРВИЧНОЙ ОЦЕНКИ — 6-8 конкретных открытых вопросов для первых 1-2 встреч, с однострочным объяснением цели каждого.
-3. РАМКА ТЕРАПИИ И ОБЩАЯ СТРУКТУРА — подходящий терапевтический подход(ы) для этого профиля (например, КПТ, ACT, схема-терапия и т.д. — укажи конкретно какой и почему), типичное количество/частота сессий, краткая карта этапов.
-
-Дай ответ на русском языке, структурированно по заголовкам. После этих 3 разделов ОСТАНОВИСЬ, не пиши следующие разделы.`;
-
-    const part2Ru = `На основе результатов того же опросника "${questionnaireType}" (${summary}), теперь напиши ТОЛЬКО следующие 4 раздела, с конкретными ПРИМЕРАМИ, избегая общих клише:
-
-4. КОНКРЕТНЫЕ ТЕХНИКИ (минимум 4-5) — для каждой техники: (а) название, (б) КАК применять — пошагово, (в) ПОЧЕМУ подходит именно этому профилю, (г) конкретный пример диалога или задания для сессии.
-5. МЕЖСЕССИОННЫЕ ЗАДАНИЯ (домашние задания) — 3-4 конкретных примера с целью каждого.
-6. ПРИЗНАКИ РИСКА И МОНИТОРИНГ — на что особенно обратить внимание при этом профиле, когда нужно экстренное вмешательство или направление к другому специалисту (психиатру и т.д.).
-7. ОЦЕНКА ПРОГРЕССА — как измерять динамику (какие подшкалы, когда повторное тестирование).
-
-Дай ответ на русском языке, структурированно по заголовкам, конкретно и применимо на практике. Это не заменяет клиническое решение — суждение специалиста первично, ты лишь даёшь рабочую основу и примеры.`;
+    const sections = lang === 'ru' ? sectionsRu : sectionsAz;
 
     try {
       let combined = '';
 
-      await streamChatCompletion({
-        messages: [{ role: 'system', content: lang === 'ru' ? part1Ru : part1Az }],
-        locale: lang,
-        maxTokens: 3800,
-        onDelta: (text) => {
-          combined = text;
-          setGuidance(combined);
-          onGuidanceChange?.(combined);
-        },
-      });
-
-      combined += '\n\n';
-
-      await streamChatCompletion({
-        messages: [{ role: 'system', content: lang === 'ru' ? part2Ru : part2Az }],
-        locale: lang,
-        maxTokens: 3800,
-        onDelta: (text) => {
-          const full = combined + text;
-          setGuidance(full);
-          onGuidanceChange?.(full);
-        },
-      });
+      for (const sectionPrompt of sections) {
+        let sectionText = '';
+        await streamChatCompletion({
+          messages: [{ role: 'system', content: sectionPrompt }],
+          locale: lang,
+          maxTokens: 3000,
+          onDelta: (text) => {
+            sectionText = text;
+            const full = combined ? `${combined}\n\n${text}` : text;
+            setGuidance(full);
+            onGuidanceChange?.(full);
+          },
+        });
+        combined = combined ? `${combined}\n\n${sectionText}` : sectionText;
+      }
     } catch (err) {
       console.error('Error generating specialist guidance:', err);
       setError(t('errorMessage'));
