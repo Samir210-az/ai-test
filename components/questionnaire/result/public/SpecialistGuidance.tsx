@@ -115,20 +115,27 @@ export function SpecialistGuidance({
     setError('');
     setGuidance('');
 
-    // A deliberately long, structured prompt: this is not "how to run the
-    // first session" but the whole arc of working with this patient -
-    // treatment framing, specific techniques with an explanation of how and
-    // why to apply each one, session-by-session structure, homework, and
-    // red flags - grounded in the actual scale and its computed result.
-    const promptAz = `Sən təcrübəli klinik psixoloq/psixoterapevt üçün konsultasiya dəstək köməkçisisən. Aşağıda "${questionnaireType}" anketinin nəticələri var:
+    // DeepSeek's "deepseek-chat" model hard-caps a single response at 4096
+    // output tokens outside their (unstable) Beta API - our earlier attempt
+    // to just request more (6000) got silently clamped and cut off mid-
+    // sentence. Split the guidance into two sequential, independently-sized
+    // requests instead, each safely under that ceiling, and concatenate.
+    const summary = resultSummary || JSON.stringify(questionnaireResults);
 
-${resultSummary || JSON.stringify(questionnaireResults)}
+    const part1Az = `Sən təcrübəli klinik psixoloq/psixoterapevt üçün konsultasiya dəstək köməkçisisən. Aşağıda "${questionnaireType}" anketinin nəticələri var:
 
-Bu nəticələrə əsaslanaraq, HƏMİN PASİENTLƏ ÜMUMİ İŞ QURULUŞU üzrə mütəxəssisə ətraflı, konkret və praktik bələdçilik ver. Bu, yalnız ilk görüş üçün deyil, bütün müalicə prosesi üçündür. Aşağıdakı struktura tam əməl et, hər bölmədə konkret NÜMUNƏLƏR (məsələn dəqiq sual mətnləri, dəqiq təlimat cümlələri) ver, ümumi klişelərdən qaç:
+${summary}
+
+Bu nəticələrə əsaslanaraq, HƏMİN PASİENTLƏ ÜMUMİ İŞ QURULUŞU üzrə mütəxəssisə ətraflı, konkret və praktik bələdçilik ver (yalnız ilk görüş üçün deyil, bütün müalicə prosesi üçün). Yalnız aşağıdakı 3 bölməni yaz, hər birində konkret NÜMUNƏLƏR (dəqiq sual mətnləri, dəqiq təlimat cümlələri) ver, ümumi klişelərdən qaç:
 
 1. VƏZİYYƏTİN KLİNİK ŞƏRHİ — bu nəticələr nəyi göstərir, hansı simptom klasterlərinə diqqət yetirilməlidir.
 2. İLKİN QİYMƏTLƏNDİRMƏ SUALLARI — ilk 1-2 görüşdə vermək üçün 6-8 konkret açıq sual, hər birinin nə üçün soruşulduğunu bir cümlə ilə izah et.
-3. MÜALICƏ ÇƏRÇİVƏSİ VƏ ÜMUMI STRUKTUR — bu profil üçün uyğun terapevtik yanaşma(lar) (məs. KBT, ACT, sxema terapiyası və s. — konkret hansı olduğunu de və niyə), tipik sessiya sayı/tezliyi, mərhələlərin qısa xəritəsi (məs. 1-3-cü sessiyalar nəyə fokuslanır, 4-8-ci sessiyalar nəyə və s.).
+3. MÜALICƏ ÇƏRÇİVƏSİ VƏ ÜMUMI STRUKTUR — bu profil üçün uyğun terapevtik yanaşma(lar) (məs. KBT, ACT, sxema terapiyası və s. — konkret hansı olduğunu de və niyə), tipik sessiya sayı/tezliyi, mərhələlərin qısa xəritəsi.
+
+Cavabı Azərbaycan dilində, başlıqlarla struktur olaraq ver. Bu 3 bölmədən sonra DAYAN, sonrakı bölmələri yazma.`;
+
+    const part2Az = `Eyni "${questionnaireType}" anketinin nəticələrinə (${summary}) əsaslanaraq, indi YALNIZ aşağıdakı 4 bölməni yaz, konkret NÜMUNƏLƏRLƏ, ümumi klişelərdən qaçaraq:
+
 4. KONKRET TEXNİKALAR (ən azı 4-5 texnika) — hər texnika üçün: (a) adı, (b) NECƏ tətbiq olunur — addım-addım, (c) NİYƏ məhz bu pasient profili üçün uyğundur, (d) sessiyada istifadə oluna biləcək konkret nümunə dialoq və ya tapşırıq mətni.
 5. SESSIYALARARASI TAPŞIRIQLAR (ev tapşırığı) — 3-4 konkret nümunə, hər birinin məqsədi ilə.
 6. RİSK ƏLAMƏTLƏRİ VƏ İZLƏMƏ — bu profildə xüsusilə diqqət ediləcək xəbərdarlıq işarələri, hansı hallarda təcili müdaxilə və ya başqa mütəxəssisə (psixiatr və s.) yönləndirmə lazımdır.
@@ -136,15 +143,20 @@ Bu nəticələrə əsaslanaraq, HƏMİN PASİENTLƏ ÜMUMİ İŞ QURULUŞU üzr�
 
 Cavabı Azərbaycan dilində, başlıqlarla struktur olaraq, konkret və tətbiq edilə bilən şəkildə ver. Bu, klinik qərarı əvəz etmir — mütəxəssisin öz mühakiməsi əsasdır, sən yalnız işlək çərçivə və nümunələr təqdim edirsən.`;
 
-    const promptRu = `Ты ассистент поддержки консультаций для опытного клинического психолога/психотерапевта. Ниже приведены результаты опросника "${questionnaireType}":
+    const part1Ru = `Ты ассистент поддержки консультаций для опытного клинического психолога/психотерапевта. Ниже приведены результаты опросника "${questionnaireType}":
 
-${resultSummary || JSON.stringify(questionnaireResults)}
+${summary}
 
-На основе этих результатов дай специалисту подробное, конкретное и практическое руководство по ОБЩЕЙ РАБОТЕ С ЭТИМ ПАЦИЕНТОМ. Это не только про первую встречу, а про весь процесс работы. Строго следуй структуре ниже, в каждом разделе приводи конкретные ПРИМЕРЫ (точные формулировки вопросов, точные фразы инструкций), избегай общих клише:
+На основе этих результатов дай специалисту подробное, конкретное и практическое руководство по ОБЩЕЙ РАБОТЕ С ЭТИМ ПАЦИЕНТОМ (не только про первую встречу, а про весь процесс работы). Напиши ТОЛЬКО следующие 3 раздела, в каждом приводи конкретные ПРИМЕРЫ (точные формулировки вопросов, точные фразы инструкций), избегай общих клише:
 
 1. КЛИНИЧЕСКАЯ ИНТЕРПРЕТАЦИЯ — что показывают эти результаты, на какие кластеры симптомов обратить внимание.
 2. ВОПРОСЫ ДЛЯ ПЕРВИЧНОЙ ОЦЕНКИ — 6-8 конкретных открытых вопросов для первых 1-2 встреч, с однострочным объяснением цели каждого.
-3. РАМКА ТЕРАПИИ И ОБЩАЯ СТРУКТУРА — подходящий терапевтический подход(ы) для этого профиля (например, КПТ, ACT, схема-терапия и т.д. — укажи конкретно какой и почему), типичное количество/частота сессий, краткая карта этапов (например, сессии 1-3 фокусируются на..., сессии 4-8 на... и т.д.).
+3. РАМКА ТЕРАПИИ И ОБЩАЯ СТРУКТУРА — подходящий терапевтический подход(ы) для этого профиля (например, КПТ, ACT, схема-терапия и т.д. — укажи конкретно какой и почему), типичное количество/частота сессий, краткая карта этапов.
+
+Дай ответ на русском языке, структурированно по заголовкам. После этих 3 разделов ОСТАНОВИСЬ, не пиши следующие разделы.`;
+
+    const part2Ru = `На основе результатов того же опросника "${questionnaireType}" (${summary}), теперь напиши ТОЛЬКО следующие 4 раздела, с конкретными ПРИМЕРАМИ, избегая общих клише:
+
 4. КОНКРЕТНЫЕ ТЕХНИКИ (минимум 4-5) — для каждой техники: (а) название, (б) КАК применять — пошагово, (в) ПОЧЕМУ подходит именно этому профилю, (г) конкретный пример диалога или задания для сессии.
 5. МЕЖСЕССИОННЫЕ ЗАДАНИЯ (домашние задания) — 3-4 конкретных примера с целью каждого.
 6. ПРИЗНАКИ РИСКА И МОНИТОРИНГ — на что особенно обратить внимание при этом профиле, когда нужно экстренное вмешательство или направление к другому специалисту (психиатру и т.д.).
@@ -153,13 +165,29 @@ ${resultSummary || JSON.stringify(questionnaireResults)}
 Дай ответ на русском языке, структурированно по заголовкам, конкретно и применимо на практике. Это не заменяет клиническое решение — суждение специалиста первично, ты лишь даёшь рабочую основу и примеры.`;
 
     try {
+      let combined = '';
+
       await streamChatCompletion({
-        messages: [{ role: 'system', content: lang === 'ru' ? promptRu : promptAz }],
+        messages: [{ role: 'system', content: lang === 'ru' ? part1Ru : part1Az }],
         locale: lang,
-        maxTokens: 6000,
+        maxTokens: 3800,
         onDelta: (text) => {
-          setGuidance(text);
-          onGuidanceChange?.(text);
+          combined = text;
+          setGuidance(combined);
+          onGuidanceChange?.(combined);
+        },
+      });
+
+      combined += '\n\n';
+
+      await streamChatCompletion({
+        messages: [{ role: 'system', content: lang === 'ru' ? part2Ru : part2Az }],
+        locale: lang,
+        maxTokens: 3800,
+        onDelta: (text) => {
+          const full = combined + text;
+          setGuidance(full);
+          onGuidanceChange?.(full);
         },
       });
     } catch (err) {
