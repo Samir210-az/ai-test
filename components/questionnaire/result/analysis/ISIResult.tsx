@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculateISIResults } from '../../test/private/ISICalculator';
 import { useScopedI18n } from '@/locales/client';
 
 interface ISIResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function ISIResult({ answers }: ISIResultProps) {
+export function ISIResult({ answers, onSummary }: ISIResultProps) {
   const t = useScopedI18n('components.isiResult');
   
   const answersMap: { [key: number]: string } = {};
@@ -37,6 +38,13 @@ export function ISIResult({ answers }: ISIResultProps) {
       default: return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
+
+  useEffect(() => {
+    if (!onSummary) return;
+    const severityLabel = severityNames[results.severity as keyof typeof severityNames] || t('labels.unknown');
+    onSummary(`${t('labels.total_score')}: ${results.totalScore}/28\n${t('labels.insomnia_level')}: ${severityLabel}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.severity]);
 
   return (
     <div className="mt-6 space-y-6">

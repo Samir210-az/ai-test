@@ -9,6 +9,7 @@ export default {
     interpretation: 'Интерпретация',
     understandingTraits: 'Понимание нарциссических черт',
     factorBreakdown: 'Разбивка по факторам',
+    scoreLabel: 'Балл',
     importantNotes: 'Важные замечания',
     healthyVsProblematic: 'Здоровый нарциссизм и проблемный нарциссизм',
     interpretationLevels: {

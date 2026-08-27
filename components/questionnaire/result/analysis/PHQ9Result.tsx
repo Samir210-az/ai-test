@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculatePHQ9Results } from '../../test/private/PHQ9Calculator';
 import { useScopedI18n } from '@/locales/client';
 
 interface PHQ9ResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function PHQ9Result({ answers }: PHQ9ResultProps) {
+export function PHQ9Result({ answers, onSummary }: PHQ9ResultProps) {
   const t = useScopedI18n('components.phq9Result');
   const tCommon = useScopedI18n('common');
   
@@ -38,6 +39,20 @@ export function PHQ9Result({ answers }: PHQ9ResultProps) {
     moderately_severe: t('severityDescriptions.moderately_severe'),
     severe: t('severityDescriptions.severe')
   };
+
+  useEffect(() => {
+    if (!onSummary) return;
+    const severityLabel = severityNames[results.severity as keyof typeof severityNames] || tCommon('fallback.unknown');
+    const lines = [
+      `${t('labels.total_score')}: ${results.totalScore}/27`,
+      `${tCommon('labels.severity_level')}: ${severityLabel}`,
+    ];
+    if (results.suicidalIdeation) {
+      lines.push(t('labels.emergency_reminder'));
+    }
+    onSummary(lines.join('\n'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.severity, results.suicidalIdeation]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

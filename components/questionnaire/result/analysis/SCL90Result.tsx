@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useScopedI18n } from '@/locales/client';
 import { calculateSCL90Results } from '../../test/private/SCL90Calculator';
 
 interface SCL90ResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function SCL90Result({ answers }: SCL90ResultProps) {
+export function SCL90Result({ answers, onSummary }: SCL90ResultProps) {
   const t = useScopedI18n('components.scl90Result');
   const tCommon = useScopedI18n('common');
   
@@ -42,6 +43,21 @@ export function SCL90Result({ answers }: SCL90ResultProps) {
     moderate: tCommon('severity.moderate'),
     severe: tCommon('severity.severe')
   };
+
+  useEffect(() => {
+    if (!onSummary) return;
+    const severityLabel = severityNames[results.severity as keyof typeof severityNames] || t('warnings.unknown_level');
+    const lines = [
+      `${tCommon('labels.total_score')}: ${results.totalScore}`,
+      `${t('labels.positive_item_count')}: ${results.positiveItemCount}`,
+      `${tCommon('labels.severity_level')}: ${severityLabel}`,
+    ];
+    if (results.suicidalIdeation) {
+      lines.push(t('labels.emergency_reminder'));
+    }
+    onSummary(lines.join('\n'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.positiveItemCount, results.severity, results.suicidalIdeation]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculateDASS21Results } from '../../test/private/DASS21Calculator';
 import { useScopedI18n } from '@/locales/client';
 
 interface DASS21ResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function DASS21Result({ answers }: DASS21ResultProps) {
+export function DASS21Result({ answers, onSummary }: DASS21ResultProps) {
   const t = useScopedI18n('components.dass21Result');
 
   // Convert answer format to the format required by calculator
@@ -64,6 +65,18 @@ export function DASS21Result({ answers }: DASS21ResultProps) {
       maxScore: 42
     }
   };
+
+  useEffect(() => {
+    if (!onSummary) return;
+    const severityLabel = (sev: string) => severityNames[sev as keyof typeof severityNames] || sev;
+    onSummary(
+      `${t('labels.total_score')}: ${results.totalScore}/63\n` +
+      `${t('labels.depression_score')}: ${results.depressionScore}/42 (${severityLabel(results.depressionSeverity)})\n` +
+      `${t('labels.anxiety_score')}: ${results.anxietyScore}/42 (${severityLabel(results.anxietySeverity)})\n` +
+      `${t('labels.stress_score')}: ${results.stressScore}/42 (${severityLabel(results.stressSeverity)})`
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.depressionScore, results.anxietyScore, results.stressScore, results.depressionSeverity, results.anxietySeverity, results.stressSeverity]);
 
   return (
     <div className="mt-6 space-y-6">

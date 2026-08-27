@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculateBDI2Results } from '../../test/private/BDI2Calculator';
 import { useScopedI18n } from '@/locales/client';
 
 interface BDI2ResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function BDI2Result({ answers }: BDI2ResultProps) {
+export function BDI2Result({ answers, onSummary }: BDI2ResultProps) {
   const t = useScopedI18n('components.bdi2Result');
   const tCommon = useScopedI18n('common');
 
@@ -36,6 +37,20 @@ export function BDI2Result({ answers }: BDI2ResultProps) {
     moderate: t('severityDescriptions.moderate'),
     severe: t('severityDescriptions.severe')
   };
+
+  useEffect(() => {
+    if (!onSummary) return;
+    const severityLabel = severityNames[results.severity as keyof typeof severityNames] || tCommon('fallback.unknown');
+    const lines = [
+      `${tCommon('labels.total_score')}: ${results.totalScore}/63`,
+      `${tCommon('labels.severity_level')}: ${severityLabel}`,
+    ];
+    if (results.suicidalIdeation) {
+      lines.push(t('labels.suicide_risk_attention'));
+    }
+    onSummary(lines.join('\n'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.severity, results.suicidalIdeation]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

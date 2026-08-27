@@ -11,6 +11,8 @@ export default {
     importantNotes: 'Vacib Qeydlər',
     understandingResults: 'Nəticələrinizi Anlamaq',
     factorScores: 'Faktor Balları',
+    scoreLabel: 'Bal',
+    levelLabel: 'Səviyyə',
     interpretationLevels: {
         low: 'Aşağı',
         mild: 'Yüngül',

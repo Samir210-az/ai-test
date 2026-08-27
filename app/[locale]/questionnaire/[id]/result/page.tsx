@@ -54,6 +54,9 @@ export default function QuestionnaireResultPage({
   const [decodedAnswers, setDecodedAnswers] = useState<string[]>([]);
   // Conversation limit status
   const [isChatLimitReached, setIsChatLimitReached] = useState(false);
+  // Plain-text summary of the computed score/severity, reported by the
+  // scale-specific result component, used for the "copy result data" export
+  const [resultSummary, setResultSummary] = useState<string>('');
 
   // Construct question-option text kv pairs from decoded answers for AI
   const questionnaireResults: Record<string, string> = useMemo(() => {
@@ -106,6 +109,7 @@ export default function QuestionnaireResultPage({
       questionnaire={questionnaire}
       answers={decodedAnswers}
       questionnaireResults={questionnaireResults}
+      resultSummary={resultSummary}
       isChatLimitReached={isChatLimitReached}
     >
       <AnswerList
@@ -113,7 +117,7 @@ export default function QuestionnaireResultPage({
         answers={decodedAnswers}
         renderOptions={questionnaire.renderOptions}
       />
-      <ResultAnalysis questionnaireId={id} answers={decodedAnswers} />
+      <ResultAnalysis questionnaireId={id} answers={decodedAnswers} onSummary={setResultSummary} />
 
       <Recommendations
         questionnaireId={id}

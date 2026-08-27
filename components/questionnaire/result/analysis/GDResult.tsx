@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useScopedI18n } from '@/locales/client';
 import { calculateGDResults } from '../../test/private/GDCalculator';
 
@@ -19,6 +19,8 @@ function useLabels() {
     importantNotes: t('importantNotes'),
     understandingResults: t('understandingResults'),
     factorScores: t('factorScores'),
+    scoreLabel: t('scoreLabel'),
+    levelLabel: t('levelLabel'),
     interpretationLevels: {
       low: t('interpretationLevels.low'),
       mild: t('interpretationLevels.mild'),
@@ -46,8 +48,10 @@ function useLabels() {
 
 export function GDResult({
   answers,
+  onSummary,
 }: {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }) {
   const labels = useLabels();
   
@@ -73,6 +77,15 @@ export function GDResult({
     return labels.interpretationLevels[interpretation as keyof typeof labels.interpretationLevels] || 'Unknown';
   };
 
+  useEffect(() => {
+    if (!onSummary) return;
+    onSummary(
+      `${labels.totalScore}: ${results.totalScore}/189 (${results.scorePercentage}%)\n` +
+      `${labels.overallAssessment}: ${getInterpretationLabel(results.interpretation)}`
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.scorePercentage, results.interpretation]);
+
   return (
     <div className="mt-6 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -91,10 +104,10 @@ export function GDResult({
       <div className="bg-white border rounded-lg p-4 shadow-sm">
         <h3 className="text-sm font-medium text-gray-500 mb-2">{labels.overallAssessment}</h3>
         <div className={`text-lg font-semibold ${getInterpretationColor(results.interpretation)}`}>
-          {getInterpretationLabel(results.interpretation)} Level
+          {getInterpretationLabel(results.interpretation)} {labels.levelLabel}
         </div>
         <p className="text-sm text-gray-600 mt-1">
-          Score: {results.totalScore}/189 ({results.scorePercentage}%)
+          {labels.scoreLabel}: {results.totalScore}/189 ({results.scorePercentage}%)
         </p>
       </div>
 

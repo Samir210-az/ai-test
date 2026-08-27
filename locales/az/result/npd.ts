@@ -9,6 +9,7 @@ export default {
     interpretation: 'Şərh',
     understandingTraits: 'Narsissik Xüsusiyyətləri Anlamaq',
     factorBreakdown: 'Faktorların Bölgüsü',
+    scoreLabel: 'Bal',
     importantNotes: 'Vacib Qeydlər',
     healthyVsProblematic: 'Sağlam Narsissizm və Problemli Narsissizm',
     interpretationLevels: {

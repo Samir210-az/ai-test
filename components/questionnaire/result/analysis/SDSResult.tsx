@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculateSDSResults } from '../../test/private/SDSCalculator';
 import { useScopedI18n } from '@/locales/client';
 
 interface SDSResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function SDSResult({ answers }: SDSResultProps) {
+export function SDSResult({ answers, onSummary }: SDSResultProps) {
   const t = useScopedI18n('components.sdsResult');
   
   // Convert answer format to the format required by calculator
@@ -48,6 +49,13 @@ export function SDSResult({ answers }: SDSResultProps) {
 
   // Get raw score (not multiplied by 1.25)
   const rawScore = Math.round(results.totalScore / 1.25);
+
+  useEffect(() => {
+    if (!onSummary) return;
+    const severityLabel = severityNames[results.severity as keyof typeof severityNames] || results.severity;
+    onSummary(`${t('labels.raw_total_score')}: ${rawScore}/80\n${t('labels.standard_score')}: ${results.totalScore}\n${t('labels.depression_level')}: ${severityLabel}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.severity]);
 
   return (
     <div className="mt-6 space-y-6">

@@ -11,6 +11,8 @@ export default {
     importantNotes: 'Важные замечания',
     understandingResults: 'Как понимать результаты',
     factorScores: 'Баллы по факторам',
+    scoreLabel: 'Балл',
+    levelLabel: 'Уровень',
     interpretationLevels: {
         low: 'Низкий',
         mild: 'Лёгкий',

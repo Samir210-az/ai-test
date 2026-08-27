@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useScopedI18n } from '@/locales/client';
 import { calculateADHDResults } from '../../test/private/ADHDCalculator';
 
@@ -39,8 +39,10 @@ function useLabels() {
 
 export function ADHDResult({
   answers,
+  onSummary,
 }: {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }) {
   const labels = useLabels();
   
@@ -65,6 +67,16 @@ export function ADHDResult({
   const getSeverityLabel = (severity: string) => {
     return labels.severityLevels[severity as keyof typeof labels.severityLevels] || 'Unknown';
   };
+
+  useEffect(() => {
+    if (!onSummary) return;
+    onSummary(
+      `${labels.totalScore}: ${results.totalScore}/72\n` +
+      `${labels.screeningResult}: ${results.screeningPositive ? labels.positiveScreen : labels.negativeScreen}\n` +
+      `${labels.severityLevel}: ${getSeverityLabel(results.severity)}`
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.screeningPositive, results.severity]);
 
   return (
     <div className="mt-6 space-y-4">

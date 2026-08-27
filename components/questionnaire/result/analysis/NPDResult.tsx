@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useScopedI18n } from '@/locales/client';
 import { calculateNPDResults } from '../../test/private/NPDCalculator';
 
@@ -19,6 +19,7 @@ function useLabels() {
     factorBreakdown: t('factorBreakdown'),
     importantNotes: t('importantNotes'),
     healthyVsProblematic: t('healthyVsProblematic'),
+    scoreLabel: t('scoreLabel'),
     interpretationLevels: {
       low: t('interpretationLevels.low'),
       average: t('interpretationLevels.average'),
@@ -55,8 +56,10 @@ function useLabels() {
 
 export function NPDResult({
   answers,
+  onSummary,
 }: {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }) {
   const labels = useLabels();
   
@@ -86,6 +89,16 @@ export function NPDResult({
     return labels.traitLabels[trait as keyof typeof labels.traitLabels] || 'Unknown';
   };
 
+  useEffect(() => {
+    if (!onSummary) return;
+    onSummary(
+      `${labels.totalScore}: ${results.totalScore}/16\n` +
+      `${labels.narcissisticTraitsLevel}: ${getInterpretationLabel(results.interpretation)}\n` +
+      `${labels.dominantTrait}: ${getDominantTraitLabel(results.dominantTrait)}`
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.interpretation, results.dominantTrait]);
+
   return (
     <div className="mt-6 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -102,7 +115,7 @@ export function NPDResult({
             {getInterpretationLabel(results.interpretation)}
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Score: {results.totalScore}/16 (≈{results.percentile}th percentile)
+            {labels.scoreLabel}: {results.totalScore}/16 (≈{results.percentile}th percentile)
           </p>
         </div>
 

@@ -18,35 +18,36 @@ import { NPDResult } from './NPDResult';
 interface Props {
   questionnaireId: string;
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function ResultAnalysis({ questionnaireId, answers }: Props) {
+export function ResultAnalysis({ questionnaireId, answers, onSummary }: Props) {
   const lang = useGetLang();
   switch (questionnaireId) {
     case 'ocd':
-      return <OCDResult answers={answers} />;
+      return <OCDResult answers={answers} onSummary={onSummary} />;
     case 'scl90':
-      return <SCL90Result answers={answers} />;
+      return <SCL90Result answers={answers} onSummary={onSummary} />;
     case 'sds':
-      return <SDSResult answers={answers} />;
+      return <SDSResult answers={answers} onSummary={onSummary} />;
     case 'gad7':
-      return <GAD7Result answers={answers} />;
+      return <GAD7Result answers={answers} onSummary={onSummary} />;
     case 'phq9':
-      return <PHQ9Result answers={answers} />;
+      return <PHQ9Result answers={answers} onSummary={onSummary} />;
     case 'pss10':
-      return <PSS10Result answers={answers} />;
+      return <PSS10Result answers={answers} onSummary={onSummary} />;
     case 'dass21':
-      return <DASS21Result answers={answers} />;
+      return <DASS21Result answers={answers} onSummary={onSummary} />;
     case 'bdi2':
-      return <BDI2Result answers={answers} />;
+      return <BDI2Result answers={answers} onSummary={onSummary} />;
     case 'isi':
-      return <ISIResult answers={answers} />;
+      return <ISIResult answers={answers} onSummary={onSummary} />;
     case 'adhd':
-      return <ADHDResult answers={answers} />;
+      return <ADHDResult answers={answers} onSummary={onSummary} />;
     case 'gd':
-      return <GDResult answers={answers} />;
+      return <GDResult answers={answers} onSummary={onSummary} />;
     case 'npd':
-      return <NPDResult answers={answers} />;
+      return <NPDResult answers={answers} onSummary={onSummary} />;
     default:
       return (
         <div className="mt-6 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">

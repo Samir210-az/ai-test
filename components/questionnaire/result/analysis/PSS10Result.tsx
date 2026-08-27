@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculatePSS10Results } from '../../test/private/PSS10Calculator';
 import { useScopedI18n } from '@/locales/client';
 
 interface PSS10ResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function PSS10Result({ answers }: PSS10ResultProps) {
+export function PSS10Result({ answers, onSummary }: PSS10ResultProps) {
   const t = useScopedI18n('components.pss10Result');
   
   // Convert answer format to the format required by calculator
@@ -50,6 +51,12 @@ export function PSS10Result({ answers }: PSS10ResultProps) {
   };
 
   const scoreInterp = getScoreInterpretation(results.totalScore);
+
+  useEffect(() => {
+    if (!onSummary) return;
+    onSummary(`${t('labels.total_score')}: ${results.totalScore}/40\n${t('labels.stress_level')}: ${scoreInterp.level}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore]);
 
   return (
     <div className="mt-6 space-y-6">

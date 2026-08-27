@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useScopedI18n } from '@/locales/client';
 
 function useLabels() {
@@ -22,8 +22,10 @@ function useLabels() {
 
 export function OCDResult({
   answers,
+  onSummary,
 }: {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }) {
   const labels = useLabels();
   const toNumber = (v: string | undefined) => Number(v) || 0;
@@ -44,6 +46,14 @@ export function OCDResult({
   else if (totalScore >= 16) severityLevel = 3;
   else if (totalScore >= 8) severityLevel = 2;
   else severityLevel = 1;
+
+  useEffect(() => {
+    if (!onSummary) return;
+    onSummary(
+      `${labels.total}: ${totalScore}/40\n${labels.severity}: ${labels.severityMap[severityLevel] || '?'}`
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalScore, severityLevel]);
 
   return (
     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">

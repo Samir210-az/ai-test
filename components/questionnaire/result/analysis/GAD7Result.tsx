@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { calculateGAD7Results } from '../../test/private/GAD7Calculator';
 import { useScopedI18n } from '@/locales/client';
 
 interface GAD7ResultProps {
   answers: string[];
+  onSummary?: (summary: string) => void;
 }
 
-export function GAD7Result({ answers }: GAD7ResultProps) {
+export function GAD7Result({ answers, onSummary }: GAD7ResultProps) {
   const t = useScopedI18n('components.gad7Result');
   const tCommon = useScopedI18n('common');
 
@@ -46,6 +47,13 @@ export function GAD7Result({ answers }: GAD7ResultProps) {
       default: return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
+
+  useEffect(() => {
+    if (!onSummary) return;
+    const severityLabel = severityNames[results.severity as keyof typeof severityNames] || t('labels.unknown');
+    onSummary(`${t('labels.total_score')}: ${results.totalScore}/21\n${t('labels.anxiety_level')}: ${severityLabel}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.totalScore, results.severity]);
 
   const questionTexts = [
     t('questions.0'), t('questions.1'), t('questions.2'), t('questions.3'),
