@@ -1,0 +1,25 @@
+{
+  "name": "LXScale - Mental Health Assessment Platform",
+  "short_name": "LXScale",
+  "description": "Professional mental health assessment platform with free psychological scales and AI analysis",
+  "icons": [
+    {
+      "src": "/share/icon1.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/share/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/",
+  "orientation": "portrait-primary"
+}

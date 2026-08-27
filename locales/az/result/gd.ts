@@ -1,0 +1,36 @@
+export default {
+    totalScore: 'Ümumi Bal',
+    scorePercentage: 'Bal Faizi',
+    elevatedItems: 'Yüksək Bal Alan Bəndlər',
+    genderIdentity: 'Gender Kimliyi',
+    socialRole: 'Sosial Rol',
+    physicalDysphoria: 'Fiziki Disforiya',
+    genderExpression: 'Gender İfadəsi',
+    overallAssessment: 'Ümumi Qiymətləndirmə',
+    recommendations: 'Tövsiyələr',
+    importantNotes: 'Vacib Qeydlər',
+    understandingResults: 'Nəticələrinizi Anlamaq',
+    factorScores: 'Faktor Balları',
+    interpretationLevels: {
+        low: 'Aşağı',
+        mild: 'Yüngül',
+        moderate: 'Orta',
+        high: 'Yüksək',
+    },
+    factorDescriptions: {
+        genderIdentity: 'Öz daxili gender hissiniz haqqında hisslər',
+        socialRole: 'Təyin edilmiş genderə əsaslanan sosial gözləntilərlə rahatlıq',
+        physicalDysphoria: 'Fiziki xüsusiyyətlər və bədən haqqında hisslər',
+        genderExpression: 'Genderi müxtəlif yollarla ifadə etməklə rahatlıq',
+    },
+    notes: {
+        purpose: 'Bu sorğu yalnız təhsil və özünüdərketmə məqsədi daşıyır',
+        substitute: 'Peşəkar qiymətləndirmə və ya diaqnozu əvəz etmir',
+        complexity: 'Gender kimliyi mürəkkəb və şəxsi təcrübədir, insanlar arasında çox fərqlənir',
+        professional: 'Narahatlıq yaşayırsınızsa, ixtisaslı psixi sağlamlıq mütəxəssisi ilə danışmağı düşünün',
+    },
+    recommendationTexts: {
+        high: 'Nəticələr gender ilə bağlı əhəmiyyətli narahatlığa işarə edir. Dəstək və istiqamətləndirmə üçün gender kimliyi məsələləri üzrə ixtisaslaşmış psixi sağlamlıq mütəxəssisi ilə danışmağı düşünün.',
+        low: 'Nəticələr nisbətən aşağı səviyyəli gender ilə bağlı narahatlığa işarə edir. Buna baxmayaraq, gender kimliyi mürəkkəb və şəxsi məsələdir — sualınız və ya narahatlığınız varsa, dəstəkləyici məsləhətçi ilə danışmağı düşünün.',
+    },
+} as const;
