@@ -1,5 +1,6 @@
 export default {
     title: 'Qiymətləndirmə Nəticəsi',
+    pointsUnit: 'bal',
     severity: {
         low: 'Aşağı Stress',
         moderate: 'Orta Stress',

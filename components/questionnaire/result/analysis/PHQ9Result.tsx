@@ -10,6 +10,7 @@ interface PHQ9ResultProps {
 
 export function PHQ9Result({ answers }: PHQ9ResultProps) {
   const t = useScopedI18n('components.phq9Result');
+  const tCommon = useScopedI18n('common');
   
   // Convert answer format to the format required by calculator
   const answersMap: { [key: number]: string } = {};
@@ -99,7 +100,7 @@ export function PHQ9Result({ answers }: PHQ9ResultProps) {
       <div className={`border rounded-lg p-6 shadow-sm ${getSeverityColor(results.severity)}`}>
         <h3 className="text-lg font-semibold mb-3">{t('labels.result_interpretation')}</h3>
         <p className="text-sm mb-4">
-          {severityDescriptions[results.severity as keyof typeof severityDescriptions] || "评估结果异常，请重新测试。"}
+          {severityDescriptions[results.severity as keyof typeof severityDescriptions] || tCommon('fallback.resultAnomaly')}
         </p>
         
         <div className="space-y-2 text-sm">

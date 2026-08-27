@@ -10,6 +10,8 @@ export default {
             dimensions: 'Описание измерений',
             notes: 'Примечания',
             references: 'Источники',
+            viewDetails: 'Подробнее',
+            close: 'Закрыть',
             startSurvey: 'Начать оценку',
         },
         survey: {

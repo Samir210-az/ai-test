@@ -10,6 +10,7 @@ import { saveDraft, loadDraft, clearDraft } from '@/lib/storage';
 import { Questionnaire as QuestionnaireType, QuestionType } from '@/types';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner"
+import useGetLang from '@/hooks/useGetLang';
 
 interface QuestionnaireProps {
   questionnaire: QuestionnaireType;
@@ -21,6 +22,7 @@ export function Questionnaire({
   id,
 }: QuestionnaireProps) {
   const router = useRouter();
+  const lang = useGetLang();
   // State management
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState<{ [key: number]: string }>(() => {
@@ -166,7 +168,7 @@ export function Questionnaire({
   const handleSubmit = () => {
     // Check if all questions are answered first
     if (answeredCount < questions.length) {
-      toast("Please answer all questions");
+      toast(lang === 'ru' ? 'Пожалуйста, ответьте на все вопросы' : 'Zəhmət olmasa bütün suallara cavab verin');
       return;
     }
 

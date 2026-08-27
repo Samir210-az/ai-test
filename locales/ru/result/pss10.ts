@@ -1,5 +1,6 @@
 export default {
     title: 'Результаты оценки',
+    pointsUnit: 'баллов',
     severity: {
         low: 'Низкий стресс',
         moderate: 'Умеренный стресс',

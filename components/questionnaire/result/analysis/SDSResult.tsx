@@ -102,10 +102,10 @@ export function SDSResult({ answers }: SDSResultProps) {
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <h4 className="font-medium text-gray-900 mb-2">{t('labels.scoring_method')}</h4>
             <div className="text-sm text-gray-700 space-y-1">
-              <p><strong>正向计分项目：</strong>{t('scaleInfo.positive_items')}</p>
-              <p><strong>反向计分项目：</strong>{t('scaleInfo.reverse_items')}</p>
-              <p><strong>选项计分：</strong>{t('scaleInfo.option_scoring')}</p>
-              <p><strong>反向计分：</strong>{t('scaleInfo.reverse_scoring')}</p>
+              <p><strong>{t('scaleInfo.positiveItemsLabel')}</strong>{t('scaleInfo.positive_items')}</p>
+              <p><strong>{t('scaleInfo.reverseItemsLabel')}</strong>{t('scaleInfo.reverse_items')}</p>
+              <p><strong>{t('scaleInfo.optionScoringLabel')}</strong>{t('scaleInfo.option_scoring')}</p>
+              <p><strong>{t('scaleInfo.reverseScoringLabel')}</strong>{t('scaleInfo.reverse_scoring')}</p>
             </div>
           </div>
 

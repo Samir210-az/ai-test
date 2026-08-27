@@ -35,6 +35,10 @@ export default {
         lifestyle_management: 'Həyat tərzinin idarə edilməsi',
         social_support: 'Sosial dəstək',
     },
+    fallback: {
+        unknown: 'Naməlum',
+        resultAnomaly: 'Nəticə qeyri-adi görünür, zəhmət olmasa testi yenidən edin.',
+    },
     answerList: {
         title: 'Cavabların Təfərrüatları',
         option: 'Variant',

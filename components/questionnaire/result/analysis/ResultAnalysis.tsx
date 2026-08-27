@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import useGetLang from '@/hooks/useGetLang';
 import { OCDResult } from './OCDResult';
 import { SCL90Result } from './SCL90Result';
 import { SDSResult } from './SDSResult';
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function ResultAnalysis({ questionnaireId, answers }: Props) {
+  const lang = useGetLang();
   switch (questionnaireId) {
     case 'ocd':
       return <OCDResult answers={answers} />;
@@ -49,10 +51,13 @@ export function ResultAnalysis({ questionnaireId, answers }: Props) {
       return (
         <div className="mt-6 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div className="text-yellow-800">
-            <h3 className="font-semibold mb-2">暂不支持的量表</h3>
+            <h3 className="font-semibold mb-2">
+              {lang === 'ru' ? 'Шкала пока не поддерживается' : 'Bu şkala hələ dəstəklənmir'}
+            </h3>
             <p className="text-sm">
-              抱歉，暂时不支持量表ID为 &quot;{questionnaireId}&quot; 的结果分析。
-              请检查量表配置或联系开发人员。
+              {lang === 'ru'
+                ? `К сожалению, анализ результатов для шкалы с ID "${questionnaireId}" пока не поддерживается. Проверьте конфигурацию шкалы или обратитесь к разработчику.`
+                : `Təəssüf ki, "${questionnaireId}" ID-li şkala üçün nəticə təhlili hələ dəstəklənmir. Zəhmət olmasa şkalanın konfiqurasiyasını yoxlayın və ya developer ilə əlaqə saxlayın.`}
             </p>
           </div>
         </div>

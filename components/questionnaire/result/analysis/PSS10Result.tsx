@@ -105,7 +105,7 @@ export function PSS10Result({ answers }: PSS10ResultProps) {
           <div className="bg-gray-50 rounded-lg p-4">
             <h4 className="font-medium mb-3 flex items-center">
               <span className="w-3 h-3 bg-red-400 rounded-full mr-2"></span>
-              {t('subscales.stress_perception_title')} ({results.stressPerceptionScore}/24分)
+              {t('subscales.stress_perception_title')} ({results.stressPerceptionScore}/24 {t('pointsUnit')})
             </h4>
             <div className="space-y-2 text-sm">
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -124,7 +124,7 @@ export function PSS10Result({ answers }: PSS10ResultProps) {
           <div className="bg-gray-50 rounded-lg p-4">
             <h4 className="font-medium mb-3 flex items-center">
               <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
-              {t('subscales.coping_ability_title')} ({results.copingAbilityScore}/16分)
+              {t('subscales.coping_ability_title')} ({results.copingAbilityScore}/16 {t('pointsUnit')})
             </h4>
             <div className="space-y-2 text-sm">
               <div className="w-full bg-gray-200 rounded-full h-2">

@@ -97,7 +97,7 @@ export function BDI2Result({ answers }: BDI2ResultProps) {
           <MetricCard title={tCommon('labels.high_score_items')} value={`${results.highScoreItemCount}/21`} />
           <MetricCard
             title={tCommon('labels.severity_level')}
-            value={severityNames[results.severity as keyof typeof severityNames] || "未知"}
+            value={severityNames[results.severity as keyof typeof severityNames] || tCommon('fallback.unknown')}
             className={getSeverityColor(results.severity).split(' ')[0]}
           />
         </div>
@@ -107,7 +107,7 @@ export function BDI2Result({ answers }: BDI2ResultProps) {
       <div className={`border rounded-lg p-6 shadow-sm ${getSeverityColor(results.severity)}`}>
         <h3 className="text-lg font-semibold mb-3">{t('labels.result_interpretation')}</h3>
         <p className="text-sm mb-4">
-          {severityDescriptions[results.severity as keyof typeof severityDescriptions] || "评估结果异常，请重新测试。"}
+          {severityDescriptions[results.severity as keyof typeof severityDescriptions] || tCommon('fallback.resultAnomaly')}
         </p>
 
         <div className="space-y-2 text-sm">

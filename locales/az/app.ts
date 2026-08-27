@@ -10,6 +10,8 @@ export default {
             dimensions: 'Ölçülərin İzahı',
             notes: 'Qeydlər',
             references: 'İstinadlar',
+            viewDetails: 'Ətraflı bax',
+            close: 'Bağla',
             startSurvey: 'Qiymətləndirməyə Başla',
         },
         survey: {

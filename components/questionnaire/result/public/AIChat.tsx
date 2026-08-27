@@ -116,9 +116,9 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
       console.error('Error generating initial suggestion:', error);
       // Check if it's a 402 payment error
       if (error instanceof Error && error.message.includes('402')) {
-        setInitialSuggestion('🔔 AI分析功能暂时不可用，请稍后再试。我们正在升级服务以提供更好的体验！');
+        setInitialSuggestion(t('quotaExceededMessage'));
       } else {
-        setInitialSuggestion(t('initialSuggestionError') || '⚠️ 无法生成AI建议，请稍后再试。');
+        setInitialSuggestion(t('initialSuggestionError'));
       }
     } finally {
       setIsLoadingInitialSuggestion(false);
@@ -255,10 +255,10 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
     } catch (error) {
       console.error('Error calling AI API:', error);
       // Check error type, provide more specific error message
-      let errorMessage = t('apiErrorMessage') || '⚠️ AI服务暂时不可用，请稍后再试。';
+      let errorMessage = t('apiErrorMessage');
       
       if (error instanceof Error && error.message.includes('402')) {
-        errorMessage = '🔔 AI分析功能暂时不可用，我们正在升级服务容量。感谢您的理解！';
+        errorMessage = t('quotaExceededMessage');
       }
       
       // Update the AI message with error content

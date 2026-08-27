@@ -33,6 +33,10 @@ export default {
         range_73_plus: 'Standart bal ≥ 73: Ağır depressiya',
     },
     scaleInfo: {
+        positiveItemsLabel: 'Müsbət ballandırılan bəndlər:',
+        reverseItemsLabel: 'Əks ballandırılan bəndlər:',
+        optionScoringLabel: 'Variant ballandırması:',
+        reverseScoringLabel: 'Əks ballandırma:',
         description_1: 'SDS şkalası emosional, somatik, psixomotor və psixoloji simptomları əhatə edən 20 bənddən ibarətdir',
         description_2: '10 bənd normal, 10 bənd isə əks ballandırılır',
         description_3: 'İlkin bal 1.25-ə vurularaq digər tədqiqat nəticələri ilə müqayisə üçün standart bal əldə edilir',

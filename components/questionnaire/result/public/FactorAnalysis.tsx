@@ -15,7 +15,7 @@ export function FactorAnalysis({
   );
   if (!factorScores || Object.keys(factorScores).length === 0) return null;
 
-  // Get Chinese factor name mapping
+  // Localized factor name mapping
   const getFactorNameMap = () => {
     const factorNameMap: { [key: string]: { [key: string]: string } } = {
       ocd: {
@@ -43,26 +43,17 @@ export function FactorAnalysis({
 
     return (
       defaultDescriptions[questionnaireId]?.[factorName] ||
-      `${factorName}得分反映了您在该维度上的状态。`
+      t('genericFactorDescription')
     );
   };
 
-  // Get severity level of factor scores
-  const getFactorSeverityLevel = (factorName: string, score: number) => {
+  // Severity level identifiers (locale-independent keys, used for thresholds and colors)
+  type SeverityKey = 'mild' | 'moderate' | 'severe' | 'extreme';
+
+  // Get severity level key of factor scores (based on questionnaire ID and factor name)
+  const getFactorSeverityKey = (factorName: string, score: number): SeverityKey => {
     // Define severity thresholds based on ID and factor names
     const thresholds: { [key: string]: { [key: string]: number[] } } = {
-      scl90: {
-        躯体化: [1.5, 2.5, 3.5],
-        强迫症状: [1.5, 2.5, 3.5],
-        人际关系敏感: [1.5, 2.5, 3.5],
-        抑郁: [1.5, 2.5, 3.5],
-        焦虑: [1.5, 2.5, 3.5],
-        敌对: [1.5, 2.5, 3.5],
-        恐怖: [1.5, 2.5, 3.5],
-        偏执: [1.5, 2.5, 3.5],
-        精神病性: [1.5, 2.5, 3.5],
-        其他: [1.5, 2.5, 3.5],
-      },
       ocd: {
         obsession: [4, 8, 12],
         compulsion: [4, 8, 12],
@@ -73,10 +64,17 @@ export function FactorAnalysis({
     const factorThresholds = thresholds[questionnaireId]?.[factorName] ||
       thresholds[questionnaireId]?.['default'] || [1.5, 2.5, 3.5];
 
-    if (score < factorThresholds[0]) return t('mild');
-    if (score < factorThresholds[1]) return t('moderate');
-    if (score < factorThresholds[2]) return t('severe');
-    return t('extreme');
+    if (score < factorThresholds[0]) return 'mild';
+    if (score < factorThresholds[1]) return 'moderate';
+    if (score < factorThresholds[2]) return 'severe';
+    return 'extreme';
+  };
+
+  const severityColorMap: Record<SeverityKey, string> = {
+    mild: 'bg-green-500',
+    moderate: 'bg-yellow-500',
+    severe: 'bg-orange-500',
+    extreme: 'bg-red-500',
   };
 
   // Get maximum score of factor (for percentage calculation)
@@ -109,14 +107,9 @@ export function FactorAnalysis({
       <div className="space-y-4">
         {Object.entries(factorScores).map(([factorName, score], index) => {
           const displayName = getDisplayName(factorName);
-          const severity = getFactorSeverityLevel(factorName, score);
-          const severityColorMap: { [key: string]: string } = {
-            轻微: 'bg-green-500',
-            轻度: 'bg-yellow-500',
-            中度: 'bg-orange-500',
-            严重: 'bg-red-500',
-          };
-          const colorClass = severityColorMap[severity] || 'bg-blue-500';
+          const severityKey = getFactorSeverityKey(factorName, score);
+          const severityLabel = t(severityKey);
+          const colorClass = severityColorMap[severityKey];
 
           // Percentage calculation based on maximum scores of each factor in each scale
           const maxScore = getMaxScore(factorName);
@@ -129,7 +122,7 @@ export function FactorAnalysis({
                 <span
                   className={`px-2 py-1 rounded-full text-xs text-white ${colorClass}`}
                 >
-                  {severity}
+                  {severityLabel}
                 </span>
               </div>
               <div className="flex items-center mb-2">

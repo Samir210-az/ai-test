@@ -35,6 +35,10 @@ export default {
         lifestyle_management: 'Управление образом жизни',
         social_support: 'Социальная поддержка',
     },
+    fallback: {
+        unknown: 'Неизвестно',
+        resultAnomaly: 'Результат выглядит некорректным, пожалуйста, пройдите тест заново.',
+    },
     answerList: {
         title: 'Подробности ответов',
         option: 'Вариант',

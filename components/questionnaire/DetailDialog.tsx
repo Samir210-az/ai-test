@@ -38,7 +38,7 @@ export default function DetailDialog({ questionnaire, trigger }: DetailDialogPro
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                {trigger || <Button variant="outline">查看详情</Button>}
+                {trigger || <Button variant="outline">{t('viewDetails')}</Button>}
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
@@ -136,7 +136,7 @@ export default function DetailDialog({ questionnaire, trigger }: DetailDialogPro
                         variant="outline"
                         className="mr-2"
                     >
-                        关闭
+                        {t('close')}
                     </Button>
                     <Link href={`/questionnaire/${id}`} onClick={() => setOpen(false)}>
                         <Button className="cursor-pointer">
