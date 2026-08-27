@@ -8,6 +8,7 @@ import { Questionnaire } from '@/types';
 import Link from 'next/link';
 import { ResultContainer } from '@/components/questionnaire/result/public/ResultContainer';
 import { Recommendations } from '@/components/questionnaire/result/public/Recommendations';
+import { SpecialistGuidance } from '@/components/questionnaire/result/public/SpecialistGuidance';
 import { AnswerList } from '@/components/questionnaire/result/public/AnswerList';
 import { decompressFromEncodedURIComponent as decompress } from 'lz-string';
 import { ResultAnalysis } from '@/components/questionnaire/result/analysis/ResultAnalysis';
@@ -60,6 +61,9 @@ export default function QuestionnaireResultPage({
   // Whatever the AI chat has generated so far (initial suggestion and/or
   // the ongoing conversation), also folded into the "copy result data" export
   const [aiAnalysisText, setAiAnalysisText] = useState<string>('');
+  // Specialist-only guidance text (broad treatment approach, techniques,
+  // homework, risk flags), also folded into the copy export
+  const [specialistGuidanceText, setSpecialistGuidanceText] = useState<string>('');
 
   // Construct question-option text kv pairs from decoded answers for AI
   const questionnaireResults: Record<string, string> = useMemo(() => {
@@ -114,6 +118,7 @@ export default function QuestionnaireResultPage({
       questionnaireResults={questionnaireResults}
       resultSummary={resultSummary}
       aiAnalysisText={aiAnalysisText}
+      specialistGuidanceText={specialistGuidanceText}
       isChatLimitReached={isChatLimitReached}
     >
       <AnswerList
@@ -128,6 +133,13 @@ export default function QuestionnaireResultPage({
         questionnaireResults={questionnaireResults}
         onChatLimitReached={setIsChatLimitReached}
         onAIAnalysisChange={setAiAnalysisText}
+      />
+
+      <SpecialistGuidance
+        questionnaireType={id}
+        questionnaireResults={questionnaireResults}
+        resultSummary={resultSummary}
+        onGuidanceChange={setSpecialistGuidanceText}
       />
     </ResultContainer>
   );

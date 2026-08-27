@@ -15,10 +15,11 @@ interface ResultContainerProps {
   questionnaireResults?: Record<string, string>;
   resultSummary?: string;
   aiAnalysisText?: string;
+  specialistGuidanceText?: string;
   isChatLimitReached?: boolean;
 }
 
-export function ResultContainer({ title, id, children, questionnaire, answers, questionnaireResults, resultSummary, aiAnalysisText, isChatLimitReached = false }: ResultContainerProps) {
+export function ResultContainer({ title, id, children, questionnaire, answers, questionnaireResults, resultSummary, aiAnalysisText, specialistGuidanceText, isChatLimitReached = false }: ResultContainerProps) {
   const t = useScopedI18n(
     'component.questionnaire.result.public.resultContainer'
   );
@@ -59,6 +60,10 @@ export function ResultContainer({ title, id, children, questionnaire, answers, q
 
       if (aiAnalysisText) {
         resultData += `## ${t('copyTemplate.aiAnalysis')}\n${aiAnalysisText}\n\n`;
+      }
+
+      if (specialistGuidanceText) {
+        resultData += `## ${t('copyTemplate.specialistGuidance')}\n${specialistGuidanceText}\n\n`;
       }
 
       resultData += `## ${t('copyTemplate.usage')}\n`;

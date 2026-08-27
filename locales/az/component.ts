@@ -39,6 +39,14 @@ export default {
                     severeAdvice: 'Simptomlarınız nisbətən ağır ola bilər. Kömək üçün mümkün qədər tez peşəkar psixoloqla məsləhətləşməyi ciddi şəkildə tövsiyə edirik.',
                     generalAdvice: 'Simptomlarınız davam edərsə və ya pisləşərsə, peşəkar psixoloqla məsləhətləşməyiniz tövsiyə olunur.',
                 },
+                specialistGuidance: {
+                    sectionTitle: 'Yalnız Mütəxəssis Üçün',
+                    disclaimer: 'Bu bölmə pasientlə işləyən psixoloq/psixoterapevt üçün nəzərdə tutulub. AI tərəfindən yaradılan tövsiyələr klinik qərarı əvəz etmir — yalnız işlək çərçivə və nümunələr təqdim edir, son qərar mütəxəssisin öz mühakiməsinə əsaslanmalıdır.',
+                    generateButton: 'Mütəxəssis Tövsiyələri Al',
+                    regenerateButton: 'Yenidən Yarat',
+                    loadingMessage: 'Hazırlanır, bir neçə saniyə çəkə bilər...',
+                    errorMessage: 'Tövsiyələri yaratmaq alınmadı. Zəhmət olmasa yenidən cəhd edin.',
+                },
                 aiChat: {
                     startChatButton: 'Rahatlaşmağa kömək edə biləcək bəzi gündəlik üsullar',
                     chatTitle: 'AI Assistentlə Söhbət',
@@ -75,6 +83,7 @@ export default {
                         answer: 'Cavab',
                         resultSummary: 'Qiymətləndirmə Nəticəsi',
                         aiAnalysis: 'AI Təhlili',
+                        specialistGuidance: 'Mütəxəssis Qeydləri',
                         usage: 'İstifadə Təlimatları',
                         disclaimer: 'Bu nəticə yalnız istinad məqsədi daşıyır. Təhlil üçün zəhmət olmasa peşəkar tibbi məsləhətlə məsləhətləşin. Əlavə psixi sağlamlıq dəstəyinə ehtiyacınız varsa, peşəkar psixoloqla məsləhətləşməyiniz tövsiyə olunur.',
                         source: 'Data Mənbəyi',

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useScopedI18n } from '@/locales/client';
 import { Separator } from '@/components/ui/separator';
 import useGetLang from '@/hooks/useGetLang';
+import { streamChatCompletion, type AIStreamMessage } from '@/lib/aiStream';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -60,88 +61,22 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSuggestion, messages]);
 
-  //Use our API route instead of calling Deepseek API directly
-  const API_ENDPOINT = '/api/chat';
-
   // Generate initial AI suggestion with streaming
   const generateInitialSuggestion = useCallback(async () => {
     setIsLoadingInitialSuggestion(true);
     setInitialSuggestion(''); // Clear previous suggestion
-    
+
     try {
-      // Prepare messages to send to API
-      const initialPrompt = {
-        role: 'system',
-        content: lang === 'ru'
-          ? `Как ассистент по психическому здоровью, на основе результатов оценки ${questionnaireType} ${JSON.stringify(questionnaireResults)}, дай краткий совет и способы повседневного облегчения состояния на русском языке. Дружелюбно и поддерживающе, без медицинского диагноза, в пределах 200 слов.`
-          : `Psixi sağlamlıq assistenti olaraq, ${questionnaireType} qiymətləndirmə nəticələrinə ${JSON.stringify(questionnaireResults)} əsaslanaraq, Azərbaycan dilində qısa tövsiyə və gündəlik rahatlama üsulları ver. Dostyana və dəstəkləyici ol, tibbi diaqnoz qoyma, 200 sözdən çox olmasın.`
-      };
+      const systemPrompt = lang === 'ru'
+        ? `Как ассистент по психическому здоровью, на основе результатов оценки ${questionnaireType} ${JSON.stringify(questionnaireResults)}, дай краткий совет и способы повседневного облегчения состояния на русском языке. Дружелюбно и поддерживающе, без медицинского диагноза, в пределах 200 слов.`
+        : `Psixi sağlamlıq assistenti olaraq, ${questionnaireType} qiymətləndirmə nəticələrinə ${JSON.stringify(questionnaireResults)} əsaslanaraq, Azərbaycan dilində qısa tövsiyə və gündəlik rahatlama üsulları ver. Dostyana və dəstəkləyici ol, tibbi diaqnoz qoyma, 200 sözdən çox olmasın.`;
 
-      // Call our API route with streaming
-      const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: [initialPrompt],
-          temperature: 0.7,
-          max_tokens: 600,
-          stream: true, // Enable streaming
-          locale: lang
-        })
+      await streamChatCompletion({
+        messages: [{ role: 'system', content: systemPrompt }],
+        locale: lang,
+        maxTokens: 600,
+        onDelta: setInitialSuggestion,
       });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let suggestionContent = '';
-
-      if (reader) {
-        // SSE events (each "data: {...}" line) can be split across two
-        // separate reader.read() calls at an arbitrary byte offset - keep
-        // whatever's left after the last full line in a buffer instead of
-        // discarding it, or partial content (including multi-byte AZ/RU
-        // characters split mid-line) silently disappears from the output.
-        let buffer = '';
-        while (true) {
-          const { done, value } = await reader.read();
-
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() ?? ''; // keep the last (possibly incomplete) line
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6); // Remove 'data: ' prefix
-
-              if (data === '[DONE]') {
-                continue;
-              }
-
-              try {
-                const parsed = JSON.parse(data);
-                const content = parsed.choices?.[0]?.delta?.content;
-
-                if (content) {
-                  suggestionContent += content;
-                  setInitialSuggestion(suggestionContent);
-                }
-              } catch {
-                // Skip invalid JSON
-                continue;
-              }
-            }
-          }
-        }
-      }
     } catch (error) {
       console.error('Error generating initial suggestion:', error);
       // Check if it's a 402 payment error
@@ -205,7 +140,7 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
 
     try {
       // Prepare message history to send to API
-      const messageHistory = [
+      const messageHistory: AIStreamMessage[] = [
         {
           role: 'system',
           content: lang === 'ru'
@@ -216,76 +151,21 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
         userMessage
       ];
 
-      // Call our API route with streaming enabled
-      const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
+      await streamChatCompletion({
+        messages: messageHistory,
+        locale: lang,
+        maxTokens: 700,
+        onDelta: (accumulated) => {
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            newMessages[aiMessageIndex] = {
+              role: 'assistant',
+              content: accumulated
+            };
+            return newMessages;
+          });
         },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: messageHistory,
-          temperature: 0.7,
-          max_tokens: 700,
-          stream: true, // Enable streaming
-          locale: lang
-        })
       });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let aiResponseContent = '';
-
-      if (reader) {
-        // See the matching comment in generateInitialSuggestion() above:
-        // buffer partial lines across reads instead of discarding them.
-        let buffer = '';
-        while (true) {
-          const { done, value } = await reader.read();
-
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() ?? '';
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6); // Remove 'data: ' prefix
-
-              if (data === '[DONE]') {
-                continue;
-              }
-
-              try {
-                const parsed = JSON.parse(data);
-                const content = parsed.choices?.[0]?.delta?.content;
-
-                if (content) {
-                  aiResponseContent += content;
-                  // Update the AI message with the new content
-                  setMessages((prev) => {
-                    const newMessages = [...prev];
-                    newMessages[aiMessageIndex] = {
-                      role: 'assistant',
-                      content: aiResponseContent
-                    };
-                    return newMessages;
-                  });
-                }
-              } catch {
-                // Skip invalid JSON
-                continue;
-              }
-            }
-          }
-        }
-      }
     } catch (error) {
       console.error('Error calling AI API:', error);
       // Check error type, provide more specific error message
