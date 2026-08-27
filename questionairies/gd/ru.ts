@@ -65,7 +65,7 @@ export const gd: Questionnaire = {
         { id: 26, content: "Я испытывал(а) дистресс, связанный с гендерными ожиданиями." },
         { id: 27, content: "Я чувствую себя настоящим(ей), когда выражаю свою истинную гендерную идентичность." }
     ],
-    renderOptions: (id: number) => {
+    renderOptions: () => {
         return [
             { id: 1, content: 'Не согласен', value: '1' },
             { id: 2, content: 'Скорее не согласен', value: '2' },

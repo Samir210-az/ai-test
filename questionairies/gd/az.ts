@@ -65,7 +65,7 @@ export const gd: Questionnaire = {
         { id: 26, content: "Gender gözləntiləri ilə bağlı narahatlıq yaşamışam." },
         { id: 27, content: "Həqiqi gender kimliyimi ifadə edərkən özümü səmimi hiss edirəm." }
     ],
-    renderOptions: (id: number) => {
+    renderOptions: () => {
         return [
             { id: 1, content: 'Razı deyiləm', value: '1' },
             { id: 2, content: 'Bir az razı deyiləm', value: '2' },
