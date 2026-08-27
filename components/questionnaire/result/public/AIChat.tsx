@@ -344,10 +344,10 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
       
       {/* Chat Button or Chat Interface */}
       {!showChat ? (
-        <Button 
-          onClick={() => setShowChat(true)} 
-          className="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md"
-          variant="ghost"
+        <Button
+          onClick={() => setShowChat(true)}
+          variant="outline"
+          className="w-full h-auto min-h-10 py-2 px-4 whitespace-normal text-center leading-snug"
         >
           {t('startChatButton')}
         </Button>
@@ -409,14 +409,14 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={messageCount >= 10 ? t('conversationLimitReached') : t('inputPlaceholder')}
-                className="flex-1 border rounded-l-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 h-10"
+                className="flex-1 min-w-0 border rounded-l-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 h-10"
                 disabled={isLoading || messageCount >= 10}
                 maxLength={500}
               />
               <Button 
                 onClick={handleSendMessage} 
                 disabled={isLoading || !input.trim() || messageCount >= 10}
-                className="rounded-l-none h-10"
+                className="rounded-l-none h-10 px-3 shrink-0"
               >
                 {t('sendButton')}
               </Button>
