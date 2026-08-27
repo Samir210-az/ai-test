@@ -1,13 +1,19 @@
 import type { Metadata } from 'next';
-// TEMP-TEST-ONLY
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { I18nProviderClient } from '@/locales/client';
 import { Toaster } from "@/components/ui/sonner"
 
-const geistSans = { variable: '' };
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
 
-const geistMono = { variable: '' };
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
 
 // TODO: real domenlə əvəz et (nümunə üçün placeholder saxlanılıb)
 const SITE_URL = 'https://ai-test-az.vercel.app';
