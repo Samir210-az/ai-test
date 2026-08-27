@@ -5,12 +5,14 @@ interface RecommendationsProps {
   questionnaireId?: string;
   questionnaireResults: Record<string, string>;
   onChatLimitReached?: (isReached: boolean) => void;
+  onAIAnalysisChange?: (text: string) => void;
 }
 
 export function Recommendations({
   questionnaireId = 'unknown',
   questionnaireResults,
   onChatLimitReached,
+  onAIAnalysisChange,
 }: RecommendationsProps) {
   const t = useScopedI18n(
     'component.questionnaire.result.public.recommendations'
@@ -30,6 +32,7 @@ export function Recommendations({
           questionnaireResults={questionnaireResults}
           questionnaireType={questionnaireId}
           onLimitReached={onChatLimitReached}
+          onAnalysisChange={onAIAnalysisChange}
         />
       </div>
     </div>

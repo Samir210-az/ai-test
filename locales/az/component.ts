@@ -74,6 +74,7 @@ export default {
                         questionsAndAnswers: 'Suallar və Cavablar',
                         answer: 'Cavab',
                         resultSummary: 'Qiymətləndirmə Nəticəsi',
+                        aiAnalysis: 'AI Təhlili',
                         usage: 'İstifadə Təlimatları',
                         disclaimer: 'Bu nəticə yalnız istinad məqsədi daşıyır. Təhlil üçün zəhmət olmasa peşəkar tibbi məsləhətlə məsləhətləşin. Əlavə psixi sağlamlıq dəstəyinə ehtiyacınız varsa, peşəkar psixoloqla məsləhətləşməyiniz tövsiyə olunur.',
                         source: 'Data Mənbəyi',

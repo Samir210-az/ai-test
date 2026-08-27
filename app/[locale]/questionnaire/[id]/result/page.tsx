@@ -57,6 +57,9 @@ export default function QuestionnaireResultPage({
   // Plain-text summary of the computed score/severity, reported by the
   // scale-specific result component, used for the "copy result data" export
   const [resultSummary, setResultSummary] = useState<string>('');
+  // Whatever the AI chat has generated so far (initial suggestion and/or
+  // the ongoing conversation), also folded into the "copy result data" export
+  const [aiAnalysisText, setAiAnalysisText] = useState<string>('');
 
   // Construct question-option text kv pairs from decoded answers for AI
   const questionnaireResults: Record<string, string> = useMemo(() => {
@@ -86,7 +89,7 @@ export default function QuestionnaireResultPage({
     );
   }
 
-  if (!decodedAnswers) {
+  if (decodedAnswers.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-screen  md:p-4 p-2">
         <div className="max-w-6xl w-full bg-white rounded-lg shadow-lg md:p-8 p-4 border">
@@ -110,6 +113,7 @@ export default function QuestionnaireResultPage({
       answers={decodedAnswers}
       questionnaireResults={questionnaireResults}
       resultSummary={resultSummary}
+      aiAnalysisText={aiAnalysisText}
       isChatLimitReached={isChatLimitReached}
     >
       <AnswerList
@@ -123,6 +127,7 @@ export default function QuestionnaireResultPage({
         questionnaireId={id}
         questionnaireResults={questionnaireResults}
         onChatLimitReached={setIsChatLimitReached}
+        onAIAnalysisChange={setAiAnalysisText}
       />
     </ResultContainer>
   );

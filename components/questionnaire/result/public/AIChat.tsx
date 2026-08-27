@@ -15,9 +15,10 @@ interface AIChatProps {
   questionnaireResults: Record<string, unknown>;
   questionnaireType: string;
   onLimitReached?: (isReached: boolean) => void;
+  onAnalysisChange?: (text: string) => void;
 }
 
-export function AIChat({ questionnaireResults, questionnaireType, onLimitReached }: AIChatProps) {
+export function AIChat({ questionnaireResults, questionnaireType, onLimitReached, onAnalysisChange }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +37,28 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
       onLimitReached(messageCount >= 10);
     }
   }, [messageCount, onLimitReached]);
+
+  // Report the current AI-generated analysis text up to the parent so it can
+  // be included in "copy result data" - otherwise the copied export never
+  // contains anything the AI actually said, only the raw Q&A.
+  useEffect(() => {
+    if (!onAnalysisChange) return;
+    const parts: string[] = [];
+    if (initialSuggestion) {
+      parts.push(initialSuggestion);
+    }
+    if (messages.length > 0) {
+      const userLabel = lang === 'ru' ? 'Вы' : 'Siz';
+      const aiLabel = lang === 'ru' ? 'ИИ' : 'AI';
+      parts.push(
+        messages
+          .map((m) => `${m.role === 'user' ? userLabel : aiLabel}: ${m.content}`)
+          .join('\n\n')
+      );
+    }
+    onAnalysisChange(parts.join('\n\n---\n\n'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSuggestion, messages]);
 
   //Use our API route instead of calling Deepseek API directly
   const API_ENDPOINT = '/api/chat';
