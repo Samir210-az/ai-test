@@ -64,7 +64,7 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
           model: 'deepseek-chat',
           messages: [initialPrompt],
           temperature: 0.7,
-          max_tokens: 300,
+          max_tokens: 600,
           stream: true, // Enable streaming
           locale: lang
         })
@@ -196,7 +196,7 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
           model: 'deepseek-chat',
           messages: messageHistory,
           temperature: 0.7,
-          max_tokens: 400,
+          max_tokens: 700,
           stream: true, // Enable streaming
           locale: lang
         })

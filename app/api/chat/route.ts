@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
           model: "deepseek-chat", // fixed — do not let the client choose an arbitrary upstream model
           messages,
           temperature: typeof requestData.temperature === "number" ? requestData.temperature : 0.7,
-          max_tokens: Math.min(requestData.max_tokens || 300, 500), // Limit maximum token count
+          max_tokens: Math.min(requestData.max_tokens || 600, 800), // Limit maximum token count
           stream: requestData.stream === true, // Support streaming requests
         }),
       }
