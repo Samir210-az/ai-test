@@ -41,10 +41,10 @@ export default function QuestionnaireList() {
         tag.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
-    // Tag filtering - if no tags are selected, don't filter
+    // Tag filtering - matches if the questionnaire has ANY of the selected tags
     const matchesTags =
       selectedTags.length === 0 ||
-      selectedTags.every((tag) => q.tags.includes(tag));
+      selectedTags.some((tag) => q.tags.includes(tag));
 
     return matchesSearch && matchesTags;
   });
