@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-// import { RainbowProvider } from "@/components/context/rainbow-kit";
 import { Navbar } from '@/components/Navbar';
 import { I18nProviderClient } from '@/locales/client';
 import { Toaster } from "@/components/ui/sonner"
@@ -17,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 // TODO: real domenlə əvəz et (nümunə üçün placeholder saxlanılıb)
-const SITE_URL = 'https://www.example.com';
+const SITE_URL = 'https://ai-test-az.vercel.app';
 
 export const metadata: Metadata = {
   title: 'LXScale - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri | Peşəkar Psixoloji Şkalalar',
@@ -142,12 +141,10 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <RainbowProvider> */}
         <I18nProviderClient locale={locale}>
           <Navbar />
           <main>{children}</main>
         </I18nProviderClient>
-        {/* </RainbowProvider> */}
         <Toaster />
 
         {/* TODO: öz Google Analytics ID-ni əlavə et */}

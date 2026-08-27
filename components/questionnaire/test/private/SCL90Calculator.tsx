@@ -14,6 +14,12 @@ export const calculateSCL90Results = ({ answers }: SCL90CalculatorProps): any =>
         ? (totalScore - negativeItemCount) / positiveItemCount
         : 0;
 
+    // Suicidal/self-harm ideation flag: item 15 ("thoughts of ending your life")
+    // and item 59 ("thoughts of death or dying"). Scale is 1 ("not at all") to 5,
+    // so any answer above the baseline (>= 2) indicates the thought is present.
+    const suicidalIdeation =
+        (parseInt(answers[15] || "1") >= 2) || (parseInt(answers[59] || "1") >= 2);
+
     // SCL-90 factor grouping (based on standard factor structure)
     const factorMapping: { [key: string]: number[] } = {
         "somatization": [1, 4, 12, 27, 40, 42, 48, 49, 52, 53, 56, 58], // Somatization
@@ -65,6 +71,7 @@ export const calculateSCL90Results = ({ answers }: SCL90CalculatorProps): any =>
         positiveItemCount,
         positiveItemAverage,
         isSevere,
-        severity
+        severity,
+        suicidalIdeation
     };
 }; 

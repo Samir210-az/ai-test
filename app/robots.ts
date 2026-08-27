@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/admin/'],
     },
-    sitemap: 'https://www.lxscale.xyz/share/sitemap.xml',
+    sitemap: 'https://ai-test-az.vercel.app/share/sitemap.xml',
   }
 }

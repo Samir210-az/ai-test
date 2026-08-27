@@ -1,4 +1,11 @@
 export default {
+    crisis: {
+        suicide_warning: 'İntihar və ya ölüm haqqında fikirlərinizin olduğunu bildirdiniz. Bu çox ciddi bir siqnaldır, zəhmət olmasa dərhal kömək axtarın:',
+        hotline: '• Psixi Sağlamlıq Mərkəzinin "İnam" qaynar xəttinə zəng edin: (012) 566-50-61 (24 saat, pulsuz)',
+        hospital: '• Sosial Xidmətlər Agentliyinin "Qayğı" Çağrı Mərkəzi: 116 123',
+        doctor: '• Ən yaxın xəstəxananın təcili yardım şöbəsinə müraciət edin və ya öz həkiminizlə/psixiatrınızla əlaqə saxlayın',
+        support: '• Etibar etdiyiniz ailə üzvü və ya dostla birlikdə qalın, tək qalmayın',
+    },
     factors: {
         somatization: 'Somatizasiya',
         obsessive: 'Obsessiv-Kompulsiv',
@@ -12,6 +19,7 @@ export default {
         other: 'Digər',
     },
     labels: {
+        emergency_reminder: 'Təcili Xəbərdarlıq',
         overall_assessment: 'Ümumi Qiymətləndirmə',
         positive_item_count: 'Pozitiv Bəndlərin Sayı',
         positive_symptom_average: 'Pozitiv Simptom Ortalaması',

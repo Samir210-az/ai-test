@@ -11,7 +11,7 @@ interface SEOMetadata {
   twitterDescription: string;
 }
 
-const SITE_URL = 'https://www.example.com'; // TODO: real domenlə əvəz et
+const SITE_URL = 'https://ai-test-az.vercel.app';
 
 export function generateQuestionnaireMetadata(
   questionnaire: Questionnaire,
