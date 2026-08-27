@@ -19,6 +19,47 @@ import { useScopedI18n } from '@/locales/client';
 import { useQuestionnaire } from '@/hooks/useQuestionnaire';
 import { Questionnaire } from '@/types';
 
+// A curated, warm palette derived from the AN brand (crimson #9c1116 /
+// gold #c79a4b) plus a couple of muted complementary tones - each scale
+// gets a distinct accent so the grid is scannable at a glance, without
+// drifting into arbitrary rainbow colors that would clash with the brand.
+const ACCENT_COLORS: Record<string, string> = {
+  phq9: '#9c1116',
+  gad7: '#b8860b',
+  pss10: '#c2703d',
+  dass21: '#7a2e2e',
+  isi: '#46586b',
+  adhd: '#d29922',
+  gd: '#8e6c88',
+  npd: '#6b4c3a',
+  sds: '#a13d3d',
+  bdi2: '#7c1d1d',
+  ocd: '#5c7a5c',
+  scl90: '#4a3728',
+};
+const DEFAULT_ACCENT = '#9c1116';
+
+function getAccentColor(id: string): string {
+  return ACCENT_COLORS[id] || DEFAULT_ACCENT;
+}
+
+// Short 2-letter monogram shown inside the colored square, derived from the
+// scale's own short id/acronym rather than an arbitrary icon
+const MONOGRAMS: Record<string, string> = {
+  phq9: 'PH',
+  gad7: 'GA',
+  pss10: 'PS',
+  dass21: 'DA',
+  isi: 'IS',
+  adhd: 'AD',
+  gd: 'GD',
+  npd: 'NP',
+  sds: 'SD',
+  bdi2: 'BD',
+  ocd: 'OK',
+  scl90: 'SC',
+};
+
 export default function QuestionnaireList() {
   const questionnaires = useQuestionnaire();
   const t = useScopedI18n('component.questionnaire.list');
@@ -73,10 +114,24 @@ export default function QuestionnaireList() {
           {/* Questionnaire list */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {filteredQuestionnaires.length > 0 ? (
-              filteredQuestionnaires.map((questionnaire) => (
-                <Card key={questionnaire.id}>
-                  <CardHeader>
-                    <CardTitle>{questionnaire.title}</CardTitle>
+              filteredQuestionnaires.map((questionnaire) => {
+                const accent = getAccentColor(questionnaire.id);
+                return (
+                <Card
+                  key={questionnaire.id}
+                  className="overflow-hidden pt-0 gap-4"
+                  style={{ borderTopWidth: '4px', borderTopColor: accent }}
+                >
+                  <CardHeader className="pt-5">
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white text-xs font-bold tracking-wide"
+                        style={{ backgroundColor: accent }}
+                      >
+                        {MONOGRAMS[questionnaire.id] || questionnaire.id.slice(0, 2).toUpperCase()}
+                      </div>
+                      <CardTitle className="pt-1.5">{questionnaire.title}</CardTitle>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="mb-4 h-12">
@@ -109,7 +164,8 @@ export default function QuestionnaireList() {
                     </Link>
                   </CardFooter>
                 </Card>
-              ))
+                );
+              })
             ) : (
               <div className="col-span-3 text-center py-8 text-muted-foreground">
                 {t('noMatch')}

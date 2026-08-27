@@ -54,7 +54,8 @@ export function GDResult({
   onSummary?: (summary: string) => void;
 }) {
   const labels = useLabels();
-  
+  const tCommon = useScopedI18n('common');
+
   // Convert answers array to object format expected by calculator
   const answersObj: { [key: number]: string } = {};
   answers.forEach((answer, index) => {
@@ -74,7 +75,7 @@ export function GDResult({
   };
 
   const getInterpretationLabel = (interpretation: string) => {
-    return labels.interpretationLevels[interpretation as keyof typeof labels.interpretationLevels] || 'Unknown';
+    return labels.interpretationLevels[interpretation as keyof typeof labels.interpretationLevels] || tCommon('fallback.unknown');
   };
 
   useEffect(() => {

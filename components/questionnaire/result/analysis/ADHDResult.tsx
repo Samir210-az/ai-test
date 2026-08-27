@@ -45,7 +45,8 @@ export function ADHDResult({
   onSummary?: (summary: string) => void;
 }) {
   const labels = useLabels();
-  
+  const tCommon = useScopedI18n('common');
+
   // Convert answers array to object format expected by calculator
   const answersObj: { [key: number]: string } = {};
   answers.forEach((answer, index) => {
@@ -65,7 +66,7 @@ export function ADHDResult({
   };
 
   const getSeverityLabel = (severity: string) => {
-    return labels.severityLevels[severity as keyof typeof labels.severityLevels] || 'Unknown';
+    return labels.severityLevels[severity as keyof typeof labels.severityLevels] || tCommon('fallback.unknown');
   };
 
   useEffect(() => {

@@ -15,7 +15,6 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-// TODO: real domenlə əvəz et (nümunə üçün placeholder saxlanılıb)
 const SITE_URL = 'https://ai-test-az.vercel.app';
 
 export const metadata: Metadata = {

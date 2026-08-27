@@ -62,7 +62,8 @@ export function NPDResult({
   onSummary?: (summary: string) => void;
 }) {
   const labels = useLabels();
-  
+  const tCommon = useScopedI18n('common');
+
   // Convert answers array to object format expected by calculator
   const answersObj: { [key: number]: string } = {};
   answers.forEach((answer, index) => {
@@ -82,11 +83,11 @@ export function NPDResult({
   };
 
   const getInterpretationLabel = (interpretation: string) => {
-    return labels.interpretationLevels[interpretation as keyof typeof labels.interpretationLevels] || 'Unknown';
+    return labels.interpretationLevels[interpretation as keyof typeof labels.interpretationLevels] || tCommon('fallback.unknown');
   };
 
   const getDominantTraitLabel = (trait: string) => {
-    return labels.traitLabels[trait as keyof typeof labels.traitLabels] || 'Unknown';
+    return labels.traitLabels[trait as keyof typeof labels.traitLabels] || tCommon('fallback.unknown');
   };
 
   useEffect(() => {
