@@ -4,11 +4,19 @@ import { NextRequest, NextResponse } from "next/server";
 const I18nMiddleware = createI18nMiddleware({
     locales: ["az", "ru"],
     defaultLocale: "az",
-    urlMappingStrategy: "rewrite"
+    urlMappingStrategy: "rewrite",
+    // Always default to Azerbaijani for first-time visitors, regardless of
+    // their browser/OS language (Accept-Language). Russian remains available
+    // as an explicit choice via the language switcher, which sets a
+    // Next-Locale cookie that this resolver is skipped for on later visits.
+    resolveLocaleFromRequest: () => "az",
 });
 
 export function middleware(request: NextRequest) {
-    // Skip i18n processing for SEO-related files, PWA manifest, service worker, and app icons
+    // Skip i18n processing for SEO-related files, PWA manifest, service worker,
+    // app icons, and static brand assets (logos etc. under /brand/, served
+    // directly and referenced by next/image, which resolves them via an
+    // internal request that must not be locale-rewritten)
     if (
         request.nextUrl.pathname === '/sitemap.xml' ||
         request.nextUrl.pathname === '/robots.txt' ||
@@ -16,7 +24,8 @@ export function middleware(request: NextRequest) {
         request.nextUrl.pathname === '/sw.js' ||
         request.nextUrl.pathname === '/apple-icon.png' ||
         request.nextUrl.pathname === '/icon0.svg' ||
-        request.nextUrl.pathname === '/icon1.png'
+        request.nextUrl.pathname === '/icon1.png' ||
+        request.nextUrl.pathname.startsWith('/brand/')
     ) {
         return NextResponse.next();
     }
@@ -33,7 +42,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        "/((?!api|_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt|manifest\\.json|sw\\.js|apple-icon\\.png|icon0\\.svg|icon1\\.png).*)",
+        "/((?!api|_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt|manifest\\.json|sw\\.js|apple-icon\\.png|icon0\\.svg|icon1\\.png|brand/).*)",
         "/share/:path*"
     ],
 };

@@ -157,7 +157,6 @@ export default {
         },
     },
     navBar: {
-        title: 'LXScale',
         questionsList: 'Anketlər',
     },
 } as const;
