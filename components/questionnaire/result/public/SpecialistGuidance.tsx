@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { useScopedI18n } from '@/locales/client';
 import useGetLang from '@/hooks/useGetLang';
@@ -14,13 +15,86 @@ interface SpecialistGuidanceProps {
   onGuidanceChange?: (text: string) => void;
 }
 
-function renderMarkdownish(text: string) {
-  return text.split('\n').map((line, i) => (
-    <span key={i}>
-      {line}
-      <br />
-    </span>
-  ));
+// Renders **bold** and *italic* spans inside a single line of text.
+function renderInlineBold(line: string, keyPrefix: string) {
+  const segments = line.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean);
+  return segments.map((segment, i) => {
+    if (segment.startsWith('**') && segment.endsWith('**')) {
+      return <strong key={`${keyPrefix}-${i}`}>{segment.slice(2, -2)}</strong>;
+    }
+    if (segment.startsWith('*') && segment.endsWith('*')) {
+      return <em key={`${keyPrefix}-${i}`}>{segment.slice(1, -1)}</em>;
+    }
+    return <span key={`${keyPrefix}-${i}`}>{segment}</span>;
+  });
+}
+
+// Small, dependency-free renderer for the subset of Markdown the AI
+// reliably produces for this prompt: #/##/### headers, **bold**, "- " or
+// "* " bullet lists, and "---" horizontal rules. Good enough to avoid
+// showing raw "**", "##", "-" characters to the reader without pulling in
+// a full markdown library for one feature.
+function renderMarkdown(text: string) {
+  const lines = text.split('\n');
+  const elements: ReactNode[] = [];
+  let listBuffer: string[] = [];
+
+  const flushList = (key: string) => {
+    if (listBuffer.length === 0) return;
+    elements.push(
+      <ul key={key} className="list-disc pl-5 space-y-1 my-2">
+        {listBuffer.map((item, i) => (
+          <li key={i}>{renderInlineBold(item, `${key}-li-${i}`)}</li>
+        ))}
+      </ul>
+    );
+    listBuffer = [];
+  };
+
+  lines.forEach((rawLine, idx) => {
+    const line = rawLine.trim();
+    const key = `l-${idx}`;
+
+    if (line === '' ) {
+      flushList(`ul-${key}`);
+      return;
+    }
+    if (line === '---' || line === '***') {
+      flushList(`ul-${key}`);
+      elements.push(<hr key={key} className="my-4 border-gray-200" />);
+      return;
+    }
+    const headerMatch = line.match(/^(#{1,3})\s+(.*)$/);
+    if (headerMatch) {
+      flushList(`ul-${key}`);
+      const level = headerMatch[1].length;
+      const content = renderInlineBold(headerMatch[2], key);
+      if (level === 1) elements.push(<h3 key={key} className="text-lg font-bold mt-4 mb-2">{content}</h3>);
+      else if (level === 2) elements.push(<h4 key={key} className="text-base font-bold mt-4 mb-2">{content}</h4>);
+      else elements.push(<h5 key={key} className="text-sm font-bold mt-3 mb-1">{content}</h5>);
+      return;
+    }
+    const bulletMatch = line.match(/^[-*]\s+(.*)$/);
+    if (bulletMatch) {
+      listBuffer.push(bulletMatch[1]);
+      return;
+    }
+    const numberedMatch = line.match(/^\d+[.)]\s+(.*)$/);
+    if (numberedMatch) {
+      listBuffer.push(numberedMatch[1]);
+      return;
+    }
+
+    flushList(`ul-${key}`);
+    elements.push(
+      <p key={key} className="my-1.5">
+        {renderInlineBold(line, key)}
+      </p>
+    );
+  });
+
+  flushList('ul-end');
+  return elements;
 }
 
 export function SpecialistGuidance({
@@ -82,7 +156,7 @@ ${resultSummary || JSON.stringify(questionnaireResults)}
       await streamChatCompletion({
         messages: [{ role: 'system', content: lang === 'ru' ? promptRu : promptAz }],
         locale: lang,
-        maxTokens: 1600,
+        maxTokens: 6000,
         onDelta: (text) => {
           setGuidance(text);
           onGuidanceChange?.(text);
@@ -127,8 +201,8 @@ ${resultSummary || JSON.stringify(questionnaireResults)}
           )}
 
           {guidance && (
-            <div className="text-sm text-gray-800 bg-white border rounded-lg p-4 max-h-[500px] overflow-y-auto whitespace-pre-wrap">
-              {renderMarkdownish(guidance)}
+            <div className="text-sm text-gray-800 bg-white border rounded-lg p-4">
+              {renderMarkdown(guidance)}
             </div>
           )}
 
