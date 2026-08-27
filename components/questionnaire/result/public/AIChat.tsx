@@ -80,26 +80,33 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
       let suggestionContent = '';
 
       if (reader) {
+        // SSE events (each "data: {...}" line) can be split across two
+        // separate reader.read() calls at an arbitrary byte offset - keep
+        // whatever's left after the last full line in a buffer instead of
+        // discarding it, or partial content (including multi-byte AZ/RU
+        // characters split mid-line) silently disappears from the output.
+        let buffer = '';
         while (true) {
           const { done, value } = await reader.read();
-          
+
           if (done) break;
-          
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n');
-          
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? ''; // keep the last (possibly incomplete) line
+
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const data = line.slice(6); // Remove 'data: ' prefix
-              
+
               if (data === '[DONE]') {
-                break;
+                continue;
               }
-              
+
               try {
                 const parsed = JSON.parse(data);
                 const content = parsed.choices?.[0]?.delta?.content;
-                
+
                 if (content) {
                   suggestionContent += content;
                   setInitialSuggestion(suggestionContent);
@@ -212,26 +219,30 @@ export function AIChat({ questionnaireResults, questionnaireType, onLimitReached
       let aiResponseContent = '';
 
       if (reader) {
+        // See the matching comment in generateInitialSuggestion() above:
+        // buffer partial lines across reads instead of discarding them.
+        let buffer = '';
         while (true) {
           const { done, value } = await reader.read();
-          
+
           if (done) break;
-          
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n');
-          
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const data = line.slice(6); // Remove 'data: ' prefix
-              
+
               if (data === '[DONE]') {
-                break;
+                continue;
               }
-              
+
               try {
                 const parsed = JSON.parse(data);
                 const content = parsed.choices?.[0]?.delta?.content;
-                
+
                 if (content) {
                   aiResponseContent += content;
                   // Update the AI message with the new content
