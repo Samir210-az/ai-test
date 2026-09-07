@@ -133,4 +133,21 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
   }
+
+  /* Question/result panels predate the dark theme and are hardcoded to
+     bg-white by design (clinical content should stay on a neutral, print-
+     friendly surface). Their text/borders were written assuming the old
+     light-mode tokens, so re-scope those specific tokens back to light
+     values inside any such panel - this keeps plain (unstyled) text and
+     bare `border` elements legible without editing each component. */
+  .bg-white {
+    color-scheme: light;
+    --foreground: oklch(0.145 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    color: var(--foreground);
+  }
 }
