@@ -46,6 +46,11 @@ export default {
                     regenerateButton: 'Сгенерировать заново',
                     loadingMessage: 'Готовится, состоит из нескольких частей, это может занять некоторое время...',
                     errorMessage: 'Не удалось сгенерировать рекомендации. Пожалуйста, попробуйте снова.',
+                    downloadHtmlButton: 'Скачать HTML',
+                    printButton: 'Печать',
+                    exportTitle: 'Рекомендации для специалиста',
+                    exportGeneratedAt: 'Дата создания',
+                    exportQuestionnaire: 'Опросник',
                 },
                 aiChat: {
                     startChatButton: 'Некоторые повседневные методы, которые могут помочь облегчить состояние',

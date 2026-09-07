@@ -46,6 +46,11 @@ export default {
                     regenerateButton: 'Yenidən Yarat',
                     loadingMessage: 'Hazırlanır, bir neçə hissədən ibarətdir, bir az vaxt apara bilər...',
                     errorMessage: 'Tövsiyələri yaratmaq alınmadı. Zəhmət olmasa yenidən cəhd edin.',
+                    downloadHtmlButton: 'HTML Yüklə',
+                    printButton: 'Çap et',
+                    exportTitle: 'Mütəxəssis Tövsiyələri',
+                    exportGeneratedAt: 'Yaradılma tarixi',
+                    exportQuestionnaire: 'Anket',
                 },
                 aiChat: {
                     startChatButton: 'Rahatlaşmağa kömək edə biləcək bəzi gündəlik üsullar',

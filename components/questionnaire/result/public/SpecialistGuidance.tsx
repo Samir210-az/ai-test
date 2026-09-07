@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useScopedI18n } from '@/locales/client';
 import useGetLang from '@/hooks/useGetLang';
 import { streamChatCompletion } from '@/lib/aiStream';
-import { ChevronDown, ChevronRight, Stethoscope } from 'lucide-react';
+import { ChevronDown, ChevronRight, Stethoscope, Download, Printer } from 'lucide-react';
 
 interface SpecialistGuidanceProps {
   questionnaireType: string;
@@ -97,6 +97,74 @@ function renderMarkdown(text: string) {
   return elements;
 }
 
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// String-based counterpart to renderMarkdown() above, for building a
+// standalone HTML document (export/print) instead of React nodes. Text is
+// escaped before any markdown syntax is applied, since the source is
+// AI-generated and must not be trusted as safe HTML.
+function inlineMarkdownToHtml(line: string) {
+  return escapeHtml(line)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+}
+
+function markdownToHtml(text: string) {
+  const lines = text.split('\n');
+  const blocks: string[] = [];
+  let listBuffer: string[] = [];
+
+  const flushList = () => {
+    if (listBuffer.length === 0) return;
+    blocks.push(`<ul>${listBuffer.map((item) => `<li>${inlineMarkdownToHtml(item)}</li>`).join('')}</ul>`);
+    listBuffer = [];
+  };
+
+  lines.forEach((rawLine) => {
+    const line = rawLine.trim();
+
+    if (line === '') {
+      flushList();
+      return;
+    }
+    if (line === '---' || line === '***') {
+      flushList();
+      blocks.push('<hr />');
+      return;
+    }
+    const headerMatch = line.match(/^(#{1,3})\s+(.*)$/);
+    if (headerMatch) {
+      flushList();
+      const level = headerMatch[1].length === 1 ? 'h3' : headerMatch[1].length === 2 ? 'h4' : 'h5';
+      blocks.push(`<${level}>${inlineMarkdownToHtml(headerMatch[2])}</${level}>`);
+      return;
+    }
+    const bulletMatch = line.match(/^[-*]\s+(.*)$/);
+    if (bulletMatch) {
+      listBuffer.push(bulletMatch[1]);
+      return;
+    }
+    const numberedMatch = line.match(/^\d+[.)]\s+(.*)$/);
+    if (numberedMatch) {
+      listBuffer.push(numberedMatch[1]);
+      return;
+    }
+
+    flushList();
+    blocks.push(`<p>${inlineMarkdownToHtml(line)}</p>`);
+  });
+
+  flushList();
+  return blocks.join('\n');
+}
+
 export function SpecialistGuidance({
   questionnaireType,
   questionnaireResults,
@@ -171,6 +239,60 @@ export function SpecialistGuidance({
     }
   };
 
+  const buildExportDocument = () => {
+    const generatedAt = new Date().toLocaleString(lang === 'ru' ? 'ru-RU' : 'az-AZ');
+    return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+<meta charset="UTF-8" />
+<title>${escapeHtml(t('exportTitle'))} — ${escapeHtml(questionnaireType)}</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; max-width: 780px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.6; }
+  h1 { font-size: 22px; border-bottom: 2px solid #9c1116; padding-bottom: 10px; }
+  h3 { font-size: 18px; margin-top: 28px; }
+  h4 { font-size: 16px; margin-top: 22px; }
+  h5 { font-size: 14px; margin-top: 18px; }
+  .meta { color: #555; font-size: 13px; margin-bottom: 24px; }
+  .disclaimer { background: #fdf3e7; border: 1px solid #e8d3ae; border-radius: 6px; padding: 12px 16px; font-size: 13px; color: #6b4e17; margin-bottom: 24px; }
+  ul { padding-left: 22px; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 24px 0; }
+  @media print { body { margin: 0; padding: 20px; } }
+</style>
+</head>
+<body>
+  <h1>${escapeHtml(t('exportTitle'))}</h1>
+  <p class="meta">
+    ${escapeHtml(t('exportQuestionnaire'))}: ${escapeHtml(questionnaireType)}<br />
+    ${escapeHtml(t('exportGeneratedAt'))}: ${escapeHtml(generatedAt)}
+  </p>
+  <p class="disclaimer">${escapeHtml(t('disclaimer'))}</p>
+  ${markdownToHtml(guidance)}
+</body>
+</html>`;
+  };
+
+  const handleDownloadHtml = () => {
+    const html = buildExportDocument();
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `AN-${questionnaireType}-mutexessis-tovsiye.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    printWindow.document.write(buildExportDocument());
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.onload = () => printWindow.print();
+  };
+
   return (
     <div className="border border-amber-300 rounded-lg bg-amber-50/50 overflow-hidden">
       <button
@@ -210,9 +332,19 @@ export function SpecialistGuidance({
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           {guidance && !isLoading && (
-            <Button variant="outline" size="sm" onClick={generateGuidance}>
-              {t('regenerateButton')}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={generateGuidance}>
+                {t('regenerateButton')}
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleDownloadHtml}>
+                <Download className="w-4 h-4 mr-1.5" />
+                {t('downloadHtmlButton')}
+              </Button>
+              <Button variant="outline" size="sm" onClick={handlePrint}>
+                <Printer className="w-4 h-4 mr-1.5" />
+                {t('printButton')}
+              </Button>
+            </div>
           )}
         </div>
       )}
