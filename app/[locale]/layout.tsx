@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 const SITE_URL = 'https://ai-test-az.vercel.app';
 
 export const metadata: Metadata = {
-  title: 'LXScale - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri | Peşəkar Psixoloji Şkalalar',
+  title: 'AN - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri | Peşəkar Psixoloji Şkalalar',
   description: 'Pulsuz, peşəkar psixi sağlamlıq qiymətləndirmə platforması. Depressiya şkalaları (PHQ-9, BDI-II, SDS), narahatlıq şkalaları (GAD-7, DASS-21), OKB şkalası (Y-BOCS), yuxu şkalası (ISI), stress şkalası (PSS-10) və psixoloji simptom şkalası (SCL-90) daxildir.',
   keywords: [
     'psixi sağlamlıq', 'depressiya şkalası', 'narahatlıq şkalası', 'psixoloji qiymətləndirmə',
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
     'depressiya skrininqi', 'narahatlıq skrininqi', 'OKB qiymətləndirməsi', 'yuxu keyfiyyəti', 'stress testi',
     'психическое здоровье', 'психологические шкалы', 'тест на депрессию', 'тест на тревожность'
   ].join(', '),
-  authors: [{ name: 'LXScale Team' }],
-  creator: 'LXScale',
-  publisher: 'LXScale',
+  authors: [{ name: 'AN' }],
+  creator: 'AN',
+  publisher: 'AN',
   formatDetection: {
     email: false,
     address: false,
@@ -47,10 +47,10 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'LXScale - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri',
+    title: 'AN - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri',
     description: 'Peşəkar psixoloji qiymətləndirmə platforması. Pulsuz depressiya, narahatlıq, OKB və stress testləri. Nəticələri dərhal alın.',
     url: SITE_URL,
-    siteName: 'LXScale',
+    siteName: 'AN',
     locale: 'az_AZ',
     type: 'website',
     images: [
@@ -58,17 +58,17 @@ export const metadata: Metadata = {
         url: '/apple-icon.png',
         width: 180,
         height: 180,
-        alt: 'LXScale - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Platforması',
+        alt: 'AN - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Platforması',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LXScale - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri',
+    title: 'AN - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri',
     description: 'Peşəkar psixoloji şkalalar | Dərhal nəticələr | Tamamilə pulsuz — indi başlayın!',
     images: {
       url: '/apple-icon.png',
-      alt: 'LXScale - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Platforması',
+      alt: 'AN - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Platforması',
     },
   },
   robots: {
@@ -100,7 +100,7 @@ export default async function RootLayout({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'LXScale',
+    name: 'AN',
     description: 'Pulsuz, peşəkar psixi sağlamlıq qiymətləndirmə platforması',
     url: SITE_URL,
     potentialAction: {
@@ -110,7 +110,7 @@ export default async function RootLayout({
     },
     publisher: {
       '@type': 'Organization',
-      name: 'LXScale',
+      name: 'AN',
       url: SITE_URL,
       logo: {
         '@type': 'ImageObject',
@@ -120,13 +120,13 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className="dark">
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <meta name="apple-mobile-web-app-title" content="LXScale" />
+        <meta name="apple-mobile-web-app-title" content="AN" />
 
         {/* Additional social media optimization */}
         <meta property="og:image:type" content="image/png" />
@@ -145,8 +145,6 @@ export default async function RootLayout({
           <main>{children}</main>
         </I18nProviderClient>
         <Toaster />
-
-        {/* TODO: öz Google Analytics ID-ni əlavə et */}
       </body>
     </html>
   );

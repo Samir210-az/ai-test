@@ -27,8 +27,8 @@ export function generateQuestionnaireMetadata(
 
   // Build professional title (emphasizing free, authoritative, AI analysis)
   const title = isRu
-    ? `${questionnaire.title} - Бесплатная авторитетная оценка с ИИ | LXScale`
-    : `${questionnaire.title} - Pulsuz, Etibarlı AI Qiymətləndirmə | LXScale`;
+    ? `${questionnaire.title} - Бесплатная авторитетная оценка с ИИ | AN`
+    : `${questionnaire.title} - Pulsuz, Etibarlı AI Qiymətləndirmə | AN`;
 
   // Build detailed description (highlighting three major advantages)
   const description = isRu
@@ -47,8 +47,8 @@ export function generateQuestionnaireMetadata(
 
   // OpenGraph title (highlighting core value)
   const ogTitle = isRu
-    ? `${questionnaire.title} - Бесплатная оценка с ИИ | LXScale`
-    : `${questionnaire.title} - Pulsuz AI Qiymətləndirmə | LXScale`;
+    ? `${questionnaire.title} - Бесплатная оценка с ИИ | AN`
+    : `${questionnaire.title} - Pulsuz AI Qiymətləndirmə | AN`;
 
   // OpenGraph description (emphasizing professionalism and free)
   const ogDescription = isRu
@@ -95,7 +95,7 @@ export function generateQuestionnaireStructuredData(
     },
     provider: {
       "@type": "Organization",
-      name: "LXScale",
+      name: "AN",
       url: SITE_URL,
       description: isRu
         ? "Бесплатная авторитетная платформа оценки психического здоровья с ИИ, предоставляющая профессиональные клинические шкалы и интеллектуальный анализ"
@@ -103,7 +103,7 @@ export function generateQuestionnaireStructuredData(
     },
     isPartOf: {
       "@type": "WebSite",
-      name: "LXScale",
+      name: "AN",
       url: SITE_URL,
       description: isRu
         ? "Авторитетная бесплатная платформа оценки психического здоровья с ИИ, международные стандартные шкалы + интеллектуальный анализ, клиническая точность"
@@ -148,8 +148,8 @@ export function generateQuestionnaireStructuredData(
         {
           "@type": "Question",
           name: isRu
-            ? "Насколько авторитетны результаты оценки LXScale?"
-            : "LXScale-in qiymətləndirmə nəticələri nə qədər etibarlıdır?",
+            ? "Насколько авторитетны результаты оценки AN?"
+            : "AN-ın qiymətləndirmə nəticələri nə qədər etibarlıdır?",
           acceptedAnswer: {
             "@type": "Answer",
             text: isRu

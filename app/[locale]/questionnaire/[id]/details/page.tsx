@@ -30,9 +30,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: seoData.title,
     description: seoData.description,
     keywords: seoData.keywords.join(', '),
-    authors: [{ name: 'LXScale Team' }],
-    creator: 'LXScale',
-    publisher: 'LXScale',
+    authors: [{ name: 'AN' }],
+    creator: 'AN',
+    publisher: 'AN',
     formatDetection: {
       email: false,
       address: false,
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: seoData.ogTitle,
       description: seoData.ogDescription,
       url: canonicalUrl,
-      siteName: 'LXScale',
+      siteName: 'AN',
       locale: locale === 'ru' ? 'ru_RU' : 'az_AZ',
       type: 'website',
       images: [
