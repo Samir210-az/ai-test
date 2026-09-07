@@ -248,6 +248,7 @@ export function SpecialistGuidance({
 <title>${escapeHtml(t('exportTitle'))} — ${escapeHtml(questionnaireType)}</title>
 <style>
   body { font-family: Arial, Helvetica, sans-serif; max-width: 780px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.6; }
+  .clinic-name { font-size: 15px; font-weight: bold; color: #9c1116; letter-spacing: 0.3px; margin-bottom: 4px; }
   h1 { font-size: 22px; border-bottom: 2px solid #9c1116; padding-bottom: 10px; }
   h3 { font-size: 18px; margin-top: 28px; }
   h4 { font-size: 16px; margin-top: 22px; }
@@ -260,6 +261,7 @@ export function SpecialistGuidance({
 </style>
 </head>
 <body>
+  <div class="clinic-name">${escapeHtml(t('exportClinicName'))}</div>
   <h1>${escapeHtml(t('exportTitle'))}</h1>
   <p class="meta">
     ${escapeHtml(t('exportQuestionnaire'))}: ${escapeHtml(questionnaireType)}<br />

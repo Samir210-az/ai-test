@@ -48,6 +48,7 @@ export default {
                     errorMessage: 'Не удалось сгенерировать рекомендации. Пожалуйста, попробуйте снова.',
                     downloadHtmlButton: 'Скачать HTML',
                     printButton: 'Печать',
+                    exportClinicName: 'Центр психологической поддержки и реабилитации AN',
                     exportTitle: 'Рекомендации для специалиста',
                     exportGeneratedAt: 'Дата создания',
                     exportQuestionnaire: 'Опросник',

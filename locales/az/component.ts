@@ -48,6 +48,7 @@ export default {
                     errorMessage: 'Tövsiyələri yaratmaq alınmadı. Zəhmət olmasa yenidən cəhd edin.',
                     downloadHtmlButton: 'HTML Yüklə',
                     printButton: 'Çap et',
+                    exportClinicName: 'AN Psixoloji Dəstək və Reabilitasiya Mərkəzi',
                     exportTitle: 'Mütəxəssis Tövsiyələri',
                     exportGeneratedAt: 'Yaradılma tarixi',
                     exportQuestionnaire: 'Anket',
