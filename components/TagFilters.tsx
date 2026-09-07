@@ -58,9 +58,11 @@ export function TagFilters({ onTagsChange }: TagFiltersProps) {
         <Button
           key={tag}
           variant="outline"
-          className={`cursor-pointer ${
-            activeTags.includes(tag) ? '!bg-black !text-white' : ''
-          }`}
+          className={
+            activeTags.includes(tag)
+              ? '!bg-primary !text-primary-foreground !border-primary hover:!bg-primary/90'
+              : ''
+          }
           onClick={() => toggleTag(tag)}
         >
           {tag}
