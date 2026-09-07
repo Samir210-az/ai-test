@@ -176,4 +176,19 @@ export default {
     navBar: {
         questionsList: 'Anketlər',
     },
+    license: {
+        title: 'Lisenziya Tələb Olunur',
+        description: 'Bu qiymətləndirməyə başlamaq üçün aktiv lisenziya lazımdır. Aşağıdakı müddətlərdən birini seçib WhatsApp vasitəsilə müraciət edin — ödəniş edildikdən sonra sizə lisenziya kodu göndəriləcək.',
+        tierLabel: 'Müddət seçin',
+        tier1M: '1 Ay',
+        tier6M: '6 Ay',
+        tier1Y: '1 İl',
+        whatsappButton: 'WhatsApp ilə Müraciət Et',
+        whatsappMessage: 'Salam! AN Psixoloji Dəstək və Reabilitasiya Mərkəzinin qiymətləndirmə platformasında lisenziya almaq istəyirəm.\nSeçilmiş müddət: {tier}\nSayt: {url}',
+        codeInputLabel: 'Lisenziya kodunuz varsa, buradan aktivləşdirin',
+        codePlaceholder: 'LIC-...',
+        activateButton: 'Aktivləşdir',
+        invalidCode: 'Kod yanlışdır və ya vaxtı bitib. Zəhmət olmasa yoxlayıb yenidən cəhd edin.',
+        activeUntil: 'Lisenziyanız aktivdir. Bitmə tarixi: {date}',
+    },
 } as const;
