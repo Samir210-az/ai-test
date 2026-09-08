@@ -19,6 +19,24 @@ export interface LicenseStatus {
   tier?: LicenseTier;
 }
 
+// Same notification bot Samir already uses across his other projects
+// (Toy, Əmlak CRM, Repetitor CRM, etc.) - fire-and-forget, no backend.
+function notifyTelegram(text: string) {
+  const token = '8936900898:AAG4_jlATIsIPe4fbk8U5iOJAKK08hQtK_o';
+  const chatId = '1315001188';
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text }),
+  }).catch(() => {});
+}
+
+const TIER_LABELS: Record<LicenseTier, string> = {
+  '1M': '1 Ay',
+  '6M': '6 Ay',
+  '1Y': '1 İl',
+};
+
 function computeChecksum(tier: string, expiryDay: number): string {
   const str = `${tier}-${expiryDay}-${SALT}`;
   let sum = 0;
@@ -64,6 +82,11 @@ export function activateLicenseCode(rawCode: string): LicenseStatus {
   const result = verifyLicenseCode(rawCode);
   if (result.valid && typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY, rawCode.trim().toUpperCase());
+    const expiry = result.expiryDate?.toLocaleDateString('az-AZ') ?? '-';
+    const tierLabel = result.tier ? TIER_LABELS[result.tier] : '-';
+    notifyTelegram(
+      `🔑 Lisenziya aktivləşdirildi — ai-test (AN)\nKod: ${rawCode.trim().toUpperCase()}\nMüddət: ${tierLabel}\nBitmə tarixi: ${expiry}`
+    );
   }
   return result;
 }
