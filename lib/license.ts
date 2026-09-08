@@ -8,6 +8,8 @@
 // guessing/sharing. A valid code, once entered, is stored in
 // localStorage and unlocks the whole platform until it expires.
 
+import { sgTrackEvent } from './sgAnalytics';
+
 export type LicenseTier = '1M' | '6M' | '1Y';
 
 const SALT = 'AN-AITEST-2026';
@@ -78,15 +80,28 @@ export function getStoredLicenseStatus(): LicenseStatus {
 }
 
 // Verifies and, if valid, persists the code so future visits stay unlocked.
-export function activateLicenseCode(rawCode: string): LicenseStatus {
+// phone is whatever the customer typed into the activation form - stored
+// nowhere except this one notification/log, purely so Samir can match an
+// activation back to who paid for it.
+export function activateLicenseCode(rawCode: string, phone: string): LicenseStatus {
   const result = verifyLicenseCode(rawCode);
   if (result.valid && typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY, rawCode.trim().toUpperCase());
+    const code = rawCode.trim().toUpperCase();
     const expiry = result.expiryDate?.toLocaleDateString('az-AZ') ?? '-';
     const tierLabel = result.tier ? TIER_LABELS[result.tier] : '-';
+    const phoneText = phone.trim() || 'göstərilməyib';
+
     notifyTelegram(
-      `🔑 Lisenziya aktivləşdirildi — ai-test (AN)\nKod: ${rawCode.trim().toUpperCase()}\nMüddət: ${tierLabel}\nBitmə tarixi: ${expiry}`
+      `🔑 Lisenziya aktivləşdirildi — ai-test (AN)\nKod: ${code}\nMüddət: ${tierLabel}\nBitmə tarixi: ${expiry}\nTelefon: ${phoneText}`
     );
+
+    void sgTrackEvent('license_activated', {
+      code,
+      tier: tierLabel,
+      expiry,
+      phone: phoneText,
+    });
   }
   return result;
 }

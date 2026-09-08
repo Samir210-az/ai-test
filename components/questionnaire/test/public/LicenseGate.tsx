@@ -26,19 +26,24 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
   const t = useScopedI18n('component.license');
   const [selectedTier, setSelectedTier] = useState<LicenseTier>('1M');
   const [code, setCode] = useState('');
-  const [error, setError] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [errorType, setErrorType] = useState<'code' | 'phone' | null>(null);
 
   const tierLabel = t(TIERS.find((tier) => tier.value === selectedTier)!.labelKey);
   const whatsappMessage = t('whatsappMessage', { tier: tierLabel, url: SITE_URL });
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 
   const handleActivate = () => {
-    const result = activateLicenseCode(code);
+    if (!phone.trim()) {
+      setErrorType('phone');
+      return;
+    }
+    const result = activateLicenseCode(code, phone);
     if (result.valid) {
-      setError(false);
+      setErrorType(null);
       onLicenseActivated();
     } else {
-      setError(true);
+      setErrorType('code');
     }
   };
 
@@ -80,6 +85,20 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
 
         <div className="border-t pt-6 text-left">
           <label className="text-xs font-medium text-gray-500 mb-2 block">
+            {t('phoneLabel')}
+          </label>
+          <Input
+            type="tel"
+            value={phone}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              if (errorType === 'phone') setErrorType(null);
+            }}
+            placeholder={t('phonePlaceholder')}
+            className="mb-4"
+          />
+
+          <label className="text-xs font-medium text-gray-500 mb-2 block">
             {t('codeInputLabel')}
           </label>
           <div className="flex gap-2">
@@ -87,7 +106,7 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
               value={code}
               onChange={(e) => {
                 setCode(e.target.value);
-                setError(false);
+                if (errorType === 'code') setErrorType(null);
               }}
               placeholder={t('codePlaceholder')}
               className="uppercase"
@@ -97,7 +116,8 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
               {t('activateButton')}
             </Button>
           </div>
-          {error && <p className="text-sm text-red-600 mt-2">{t('invalidCode')}</p>}
+          {errorType === 'code' && <p className="text-sm text-red-600 mt-2">{t('invalidCode')}</p>}
+          {errorType === 'phone' && <p className="text-sm text-red-600 mt-2">{t('phoneRequired')}</p>}
         </div>
       </div>
     </div>
