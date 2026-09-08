@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
+import { SgAnalyticsTracker } from '@/components/SgAnalyticsTracker';
 import { I18nProviderClient } from '@/locales/client';
 import { Toaster } from "@/components/ui/sonner"
 
@@ -141,6 +142,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <I18nProviderClient locale={locale}>
+          <SgAnalyticsTracker />
           <Navbar />
           <main>{children}</main>
         </I18nProviderClient>

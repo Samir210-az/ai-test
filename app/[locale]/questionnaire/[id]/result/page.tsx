@@ -2,7 +2,7 @@
 
 import { notFound } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, useMemo, use } from 'react';
+import { useEffect, useState, useMemo, useRef, use } from 'react';
 import { Button } from '@/components/ui/button';
 import { Questionnaire } from '@/types';
 import Link from 'next/link';
@@ -14,6 +14,7 @@ import { decompressFromEncodedURIComponent as decompress } from 'lz-string';
 import { ResultAnalysis } from '@/components/questionnaire/result/analysis/ResultAnalysis';
 import { useQuestionnaire } from '@/hooks/useQuestionnaire';
 import { useScopedI18n } from '@/locales/client';
+import { sgTrackTest } from '@/lib/sgAnalytics';
 
 export default function QuestionnaireResultPage({
   params,
@@ -64,6 +65,17 @@ export default function QuestionnaireResultPage({
   // Specialist-only guidance text (broad treatment approach, techniques,
   // homework, risk flags), also folded into the copy export
   const [specialistGuidanceText, setSpecialistGuidanceText] = useState<string>('');
+
+  // Report the completed test to SG Insight once its final summary is
+  // computed (final score/severity only, matching how the other repos
+  // report results - never per-question data).
+  const trackedTestRef = useRef(false);
+  useEffect(() => {
+    if (resultSummary && !trackedTestRef.current) {
+      trackedTestRef.current = true;
+      sgTrackTest(id, resultSummary);
+    }
+  }, [resultSummary, id]);
 
   // Construct question-option text kv pairs from decoded answers for AI
   const questionnaireResults: Record<string, string> = useMemo(() => {
