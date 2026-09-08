@@ -28,7 +28,7 @@ export function Navigation({
         {t('previousPage')}
       </Button>
 
-      <span className="text-sm text-gray-500">
+      <span className="text-sm text-muted-foreground">
         {t('pageInfo', { currentPage, totalPages })}
       </span>
 

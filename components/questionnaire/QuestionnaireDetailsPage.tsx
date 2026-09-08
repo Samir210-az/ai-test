@@ -82,14 +82,14 @@ export default function QuestionnaireDetailsPage({ questionnaire, locale = 'az' 
                 {/* Introduction */}
                 <div className="mb-8">
                     <h2 className="text-xl font-semibold mb-4">{t('introduction')}</h2>
-                    <p className="text-gray-700 leading-relaxed">{details.introduction}</p>
+                    <p className="text-muted-foreground leading-relaxed">{details.introduction}</p>
                 </div>
 
                 {/* Instructions */}
                 {details.instructions && (
                     <div className="mb-8">
                         <h2 className="text-xl font-semibold mb-4">{t('instructions')}</h2>
-                        <p className="text-gray-700 leading-relaxed">{details.instructions}</p>
+                        <p className="text-muted-foreground leading-relaxed">{details.instructions}</p>
                     </div>
                 )}
 
@@ -97,7 +97,7 @@ export default function QuestionnaireDetailsPage({ questionnaire, locale = 'az' 
                 {details.scoringMethod && details.scoringMethod.length > 0 && (
                     <div className="mb-8">
                         <h2 className="text-xl font-semibold mb-4">{t('scoringMethod')}</h2>
-                        <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                        <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                             {details.scoringMethod.map((method: string, index: number) => (
                                 <li key={index} className="leading-relaxed">{method}</li>
                             ))}
@@ -109,10 +109,10 @@ export default function QuestionnaireDetailsPage({ questionnaire, locale = 'az' 
                 {details.dimensions && details.dimensions.length > 0 && (
                     <div className="mb-8">
                         <h2 className="text-xl font-semibold mb-4">{t('dimensions')}</h2>
-                        <ol className="list-decimal pl-6 space-y-3 text-gray-700">
+                        <ol className="list-decimal pl-6 space-y-3 text-muted-foreground">
                             {details.dimensions.map((dim: Dimension, index: number) => (
                                 <li key={index} className="leading-relaxed">
-                                    <strong className="text-gray-900">{dim.name}</strong>：{dim.description}
+                                    <strong className="text-foreground">{dim.name}</strong>：{dim.description}
                                 </li>
                             ))}
                         </ol>
@@ -123,7 +123,7 @@ export default function QuestionnaireDetailsPage({ questionnaire, locale = 'az' 
                 {details.notes && details.notes.length > 0 && (
                     <div className="mb-8">
                         <h2 className="text-xl font-semibold mb-4">{t('notes')}</h2>
-                        <ol className="list-decimal pl-6 space-y-2 text-gray-700">
+                        <ol className="list-decimal pl-6 space-y-2 text-muted-foreground">
                             {details.notes.map((note: string, index: number) => (
                                 <li key={index} className="leading-relaxed">{note}</li>
                             ))}
@@ -156,7 +156,7 @@ export default function QuestionnaireDetailsPage({ questionnaire, locale = 'az' 
             {/* Bottom CTA */}
             <div className="mt-12 pt-8 border-t">
                 <div className="text-center">
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-muted-foreground mb-4">
                         {locale === 'ru' ? 'Готовы начать оценку?' : 'Qiymətləndirməyə başlamağa hazırsınız?'}
                     </p>
                     <Link href={`/questionnaire/${id}`}>
