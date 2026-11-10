@@ -24,6 +24,7 @@
   <p>Kod yaratmaq üçün admin Google hesabı ilə daxil olun. Giriş yadda saxlanmır.</p>
   <div id="login"><button id="loginBtn" type="button">Google ilə daxil ol</button></div>
   <div id="tool" hidden>
+    <a id="mine" hidden href="/" style="display:block;text-align:center;background:#2a7a4f;color:#fff;font-weight:700;text-decoration:none;padding:13px;border-radius:12px;margin-bottom:14px">✓ Bu cihazda testlər sizin üçün ömürlük açıqdır — Testlərə keç</a>
     <select id="tier" aria-label="Müddət">
       <option value="1M">1 Ay</option>
       <option value="6M">6 Ay</option>
@@ -61,11 +62,23 @@ $('loginBtn').onclick = async () => {
     const r = await auth.signInWithPopup(p);
     if (!(r.user && r.user.email === 'samir.akhundoff@gmail.com' && r.user.emailVerified)) { await auth.signOut(); say('Bu hesabın admin icazəsi yoxdur.'); return; }
     $('login').hidden = true; $('tool').hidden = false;
+    unlockForMe();
   } catch (e) {
     if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) return;
     say(e && e.code === 'auth/unauthorized-domain' ? 'Bu domen Firebase-də icazəli deyil.' : 'Giriş alınmadı.');
   }
 };
+// Admin bu cihazda testlərdən ömürlük istifadə etsin: 100 illik kod bu brauzerdə saxlanır.
+async function unlockForMe(){
+  try {
+    const idToken = await auth.currentUser.getIdToken();
+    const res = await fetch('/api/license/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken, tier: 'ADMIN' }) });
+    if (!res.ok) return;
+    const d = await res.json();
+    localStorage.setItem('an_ai_test_license', JSON.stringify({ code: d.code, expiry: d.expiry, tier: '1Y' }));
+    $('mine').hidden = false;
+  } catch {}
+}
 $('genBtn').onclick = async () => {
   say(''); $('genBtn').disabled = true;
   try {

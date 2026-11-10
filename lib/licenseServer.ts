@@ -46,10 +46,11 @@ export function verifyLicense(raw: unknown): VerifiedLicense {
   return { valid: today <= expiryDay, expiry: expiryDay * 86400000, tier };
 }
 
-export function generateLicense(tier: LicenseTier): { code: string; expiry: number } {
+// lifetime=true: yalnız admin üçün, 100 illik kod (format eynidir, server onu adi kod kimi tanıyır)
+export function generateLicense(tier: LicenseTier, lifetime = false): { code: string; expiry: number } {
   const salt = process.env.LICENSE_SALT;
   if (!salt) throw new Error('LICENSE_SALT is not configured');
-  const day = Math.floor(Date.now() / 86400000) + DURATIONS[tier];
+  const day = Math.floor(Date.now() / 86400000) + (lifetime ? 36500 : DURATIONS[tier]);
   return { code: `LIC-${tier}-${day.toString(36).toUpperCase()}-${checksum(tier, day, salt)}`, expiry: day * 86400000 };
 }
 
