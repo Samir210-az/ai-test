@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const seoData = generateQuestionnaireMetadata(questionnaire, locale);
-  const canonicalUrl = `https://ai-test-az.vercel.app/${locale === 'az' ? '' : locale + '/'}questionnaire/${id}/details`;
+  const canonicalUrl = `https://ai-test.aze-ai.az/${locale === 'az' ? '' : locale + '/'}questionnaire/${id}/details`;
 
   return {
     title: seoData.title,
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: 'website',
       images: [
         {
-          url: `https://ai-test-az.vercel.app/api/og?title=${encodeURIComponent(questionnaire.title)}&locale=${locale}`,
+          url: `https://ai-test.aze-ai.az/api/og?title=${encodeURIComponent(questionnaire.title)}&locale=${locale}`,
           width: 1200,
           height: 630,
           alt: questionnaire.title,
@@ -59,14 +59,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: seoData.twitterTitle,
       description: seoData.twitterDescription,
       images: [
-        `https://ai-test-az.vercel.app/api/og?title=${encodeURIComponent(questionnaire.title)}&locale=${locale}`,
+        `https://ai-test.aze-ai.az/api/og?title=${encodeURIComponent(questionnaire.title)}&locale=${locale}`,
       ],
     },
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        'ru-RU': `https://ai-test-az.vercel.app/ru/questionnaire/${id}/details`,
-        'az-AZ': `https://ai-test-az.vercel.app/questionnaire/${id}/details`,
+        'ru-RU': `https://ai-test.aze-ai.az/ru/questionnaire/${id}/details`,
+        'az-AZ': `https://ai-test.aze-ai.az/questionnaire/${id}/details`,
       },
     },
     robots: {
@@ -109,7 +109,7 @@ export default async function QuestionnaireDetailPage({ params }: PageProps) {
   const questionnaireJsonLd = generateQuestionnaireStructuredData(
     questionnaire,
     locale,
-    `https://ai-test-az.vercel.app/${locale === 'az' ? '' : locale + '/'}questionnaire/${id}/details`
+    `https://ai-test.aze-ai.az/${locale === 'az' ? '' : locale + '/'}questionnaire/${id}/details`
   );
 
   return (

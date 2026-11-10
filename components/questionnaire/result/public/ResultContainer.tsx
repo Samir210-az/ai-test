@@ -69,7 +69,7 @@ export function ResultContainer({ title, id, children, questionnaire, answers, q
       resultData += `## ${t('copyTemplate.usage')}\n`;
       resultData += `${t('copyTemplate.disclaimer')}\n\n`;
       resultData += `${t('copyTemplate.source')}: ${t('copyTemplate.platform')}\n`;
-      resultData += `${t('copyTemplate.website')}: https://ai-test-az.vercel.app\n`;
+      resultData += `${t('copyTemplate.website')}: https://ai-test.aze-ai.az\n`;
       
       await navigator.clipboard.writeText(resultData);
       toast.success(t('copyResultDataSuccess'));

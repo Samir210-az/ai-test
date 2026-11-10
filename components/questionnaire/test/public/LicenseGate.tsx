@@ -10,7 +10,7 @@ import { activateLicenseCode, LicenseTier } from '@/lib/license';
 // Country-code-normalized WhatsApp number (wa.me requires digits only,
 // no leading zero) - Samir's contact number for license requests.
 const WHATSAPP_NUMBER = '994552107111';
-const SITE_URL = 'https://ai-test-az.vercel.app';
+const SITE_URL = 'https://ai-test.aze-ai.az';
 
 interface LicenseGateProps {
   onLicenseActivated: () => void;

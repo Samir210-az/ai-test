@@ -11,7 +11,7 @@ interface SEOMetadata {
   twitterDescription: string;
 }
 
-const SITE_URL = 'https://ai-test-az.vercel.app';
+const SITE_URL = 'https://ai-test.aze-ai.az';
 
 export function generateQuestionnaireMetadata(
   questionnaire: Questionnaire,
