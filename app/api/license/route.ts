@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyLicense, notifyTelegram, checkBinding, isLifetime } from "@/lib/licenseServer";
 
-const ALLOWED_ORIGINS = ["https://samir210-az.github.io"];
+const ALLOWED_ORIGINS = ["https://samir210-az.github.io", "https://cbt.aze-ai.az"];
 
 function corsHeaders(request: NextRequest): Record<string, string> {
   const origin = request.headers.get("origin");
