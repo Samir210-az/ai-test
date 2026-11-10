@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Lisenziya kodu — ai-test admin</title>
+<style>
+  body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#f6f1ee;color:#2a1a14;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:16px}
+  .box{background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:26px;width:100%;max-width:380px}
+  h1{font-size:1.25rem;margin:0 0 6px}
+  p{font-size:.9rem;color:#6b5a52;margin:0 0 18px}
+  button,select{width:100%;font:inherit;font-size:1rem;padding:13px;border-radius:12px;border:1.5px solid #e5d8d0;margin-bottom:10px}
+  button{background:#9c1116;color:#fff;border:0;font-weight:700;cursor:pointer}
+  button.light{background:#f1e6e0;color:#9c1116}
+  .code{font:700 1.2rem ui-monospace,monospace;letter-spacing:.04em;background:#faf4f0;border:1.5px dashed #d8c3b8;border-radius:12px;padding:14px;text-align:center;margin:6px 0 8px;word-break:break-all}
+  .err{color:#b00001;font-size:.88rem;min-height:1.2em}
+  .hint{font-size:.85rem;color:#6b5a52;text-align:center;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>ai-test lisenziya kodu</h1>
+  <p>Kod yaratmaq üçün admin Google hesabı ilə daxil olun. Giriş yadda saxlanmır.</p>
+  <div id="login"><button id="loginBtn" type="button">Google ilə daxil ol</button></div>
+  <div id="tool" hidden>
+    <select id="tier" aria-label="Müddət">
+      <option value="1M">1 Ay</option>
+      <option value="6M">6 Ay</option>
+      <option value="1Y">1 İl</option>
+    </select>
+    <button id="genBtn" type="button">Kod yarat</button>
+    <div id="result" hidden>
+      <div class="code" id="code"></div>
+      <div class="hint" id="exp"></div>
+      <button id="copyBtn" class="light" type="button">Kopyala</button>
+    </div>
+    <button id="outBtn" class="light" type="button">Çıxış</button>
+  </div>
+  <div class="err" id="err" role="status"></div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script>
+const app = firebase.initializeApp({
+  apiKey: "AIzaSyCBhyGNzZRGgQShP_C9kwAzTm_g_0zJlzg",
+  authDomain: "an-psixoloji-33442.firebaseapp.com",
+  projectId: "an-psixoloji-33442"
+}, 'admin');
+const auth = app.auth();
+const ready = auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+const $ = (id) => document.getElementById(id);
+const say = (t) => { $('err').textContent = t || ''; };
+
+$('loginBtn').onclick = async () => {
+  say('');
+  try {
+    await ready;
+    const p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' });
+    const r = await auth.signInWithPopup(p);
+    if (!(r.user && r.user.email === 'samir.akhundoff@gmail.com' && r.user.emailVerified)) { await auth.signOut(); say('Bu hesabın admin icazəsi yoxdur.'); return; }
+    $('login').hidden = true; $('tool').hidden = false;
+  } catch (e) {
+    if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) return;
+    say(e && e.code === 'auth/unauthorized-domain' ? 'Bu domen Firebase-də icazəli deyil.' : 'Giriş alınmadı.');
+  }
+};
+$('genBtn').onclick = async () => {
+  say(''); $('genBtn').disabled = true;
+  try {
+    const idToken = await auth.currentUser.getIdToken();
+    const res = await fetch('/api/license/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken, tier: $('tier').value }) });
+    const d = await res.json();
+    if (!res.ok) { say(d.error === 'not-configured' ? 'Vercel-də LICENSE_SALT təyin olunmayıb.' : 'Kod yaradılmadı.'); return; }
+    $('code').textContent = d.code;
+    $('exp').textContent = 'Bitmə tarixi: ' + new Date(d.expiry).toLocaleDateString('az-AZ');
+    $('result').hidden = false;
+  } catch { say('Kod yaradılmadı.'); }
+  finally { $('genBtn').disabled = false; }
+};
+$('copyBtn').onclick = () => navigator.clipboard.writeText($('code').textContent).then(() => { $('copyBtn').textContent = 'Kopyalandı ✓'; setTimeout(() => $('copyBtn').textContent = 'Kopyala', 1500); });
+$('outBtn').onclick = async () => { await auth.signOut(); location.reload(); };
+</script>
+</body>
+</html>
