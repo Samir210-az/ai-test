@@ -12,19 +12,25 @@ export function Navbar() {
   const router = useRouter();
   const taps = useRef(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasLicense, setHasLicense] = useState(false);
 
   // Admin ömürlük girişi bu cihazda aktivdirsə, "Çıxış" düyməsi görünür
   useEffect(() => {
     try {
       const v = JSON.parse(localStorage.getItem('an_ai_test_license') || 'null');
       setIsAdmin(!!(v && v.admin));
+      setHasLicense(!!localStorage.getItem('an_ai_test_license'));
     } catch {
       setIsAdmin(false);
+      setHasLicense(!!localStorage.getItem('an_ai_test_license'));
     }
   }, []);
 
   const onAdminLogout = () => {
-    if (!window.confirm('Admin girişindən çıxmaq istəyirsiniz? Testlər bu cihazda yenidən kod istəyəcək.')) return;
+    const msg = isAdmin
+      ? 'Admin girişindən çıxmaq istəyirsiniz? Testlər bu cihazda yenidən kod istəyəcək.'
+      : 'Çıxmaq istəyirsiniz? Yenidən daxil olmaq üçün telefon nömrənizi və lisenziya kodunuzu yazmalı olacaqsınız.';
+    if (!window.confirm(msg)) return;
     localStorage.removeItem('an_ai_test_license');
     window.location.href = '/';
   };
@@ -77,13 +83,13 @@ export function Navbar() {
             {t('questionsList')}
           </Link>
 
-          {isAdmin && (
+          {hasLicense && (
             <button
               type="button"
               onClick={onAdminLogout}
               className="rounded-md border px-2.5 py-1 text-xs font-medium text-red-700 border-red-200 hover:bg-red-50"
             >
-              🛡️ Admin · Çıxış
+              {isAdmin ? '🛡️ Admin · Çıxış' : 'Çıxış'}
             </button>
           )}
 
