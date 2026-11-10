@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   const code = String(body.code).trim().toUpperCase();
 
   if (!isLifetime(result)) {
-    const bind = await checkBinding(code, body.phone, body.activate === true);
+    const bind = await checkBinding(code, body.phone, body.activate === true, { tier: result.tier, expiry: result.expiry });
     if (bind === "mismatch") return NextResponse.json({ valid: false, reason: "phone" });
     if (bind === "error") return NextResponse.json({ valid: false, reason: "server" }, { status: 503 });
     if (bind === "new") {
