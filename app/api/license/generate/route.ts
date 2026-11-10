@@ -31,9 +31,10 @@ export async function POST(request: NextRequest) {
   }
   if (!(await isAdmin(body.idToken))) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const tier = body.tier;
-  if (tier !== "1M" && tier !== "6M" && tier !== "1Y") return NextResponse.json({ error: "bad-tier" }, { status: 400 });
+  const lifetime = tier === "ADMIN";
+  if (!lifetime && tier !== "1M" && tier !== "6M" && tier !== "1Y") return NextResponse.json({ error: "bad-tier" }, { status: 400 });
   try {
-    return NextResponse.json(generateLicense(tier as LicenseTier));
+    return NextResponse.json(generateLicense(lifetime ? "1Y" : (tier as LicenseTier), lifetime));
   } catch {
     return NextResponse.json({ error: "not-configured" }, { status: 503 });
   }
