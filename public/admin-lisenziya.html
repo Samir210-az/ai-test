@@ -15,6 +15,12 @@
   button.light{background:#f1e6e0;color:#9c1116}
   .code{font:700 1.2rem ui-monospace,monospace;letter-spacing:.04em;background:#faf4f0;border:1.5px dashed #d8c3b8;border-radius:12px;padding:14px;text-align:center;margin:6px 0 8px;word-break:break-all}
   .err{color:#b00001;font-size:.88rem;min-height:1.2em}
+  .cust{list-style:none;padding:0;margin:6px 0 14px}
+  .cust li{border:1.5px solid #eee2db;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:.88rem}
+  .cust b{font-size:.95rem}
+  .tag{display:inline-block;border-radius:20px;padding:2px 9px;font-size:.75rem;font-weight:700;margin-left:6px}
+  .ok{background:#e3f4ea;color:#1f6b40}.warn{background:#fff1d6;color:#8a5a00}.bad{background:#fbe3e3;color:#9c1116}
+  h2{font-size:1.05rem;margin:18px 0 6px}
   .hint{font-size:.85rem;color:#6b5a52;text-align:center;margin-bottom:10px}
 </style>
 </head>
@@ -36,6 +42,8 @@
       <div class="hint" id="exp"></div>
       <button id="copyBtn" class="light" type="button">Kopyala</button>
     </div>
+    <h2>Müştərilər <span id="custCount" style="color:#6b5a52;font-weight:400"></span></h2>
+    <ul class="cust" id="custList"><li>Yüklənir…</li></ul>
     <button id="outBtn" class="light" type="button">Çıxış</button>
   </div>
   <div class="err" id="err" role="status"></div>
@@ -63,6 +71,7 @@ $('loginBtn').onclick = async () => {
     if (!(r.user && r.user.email === 'samir.akhundoff@gmail.com' && r.user.emailVerified)) { await auth.signOut(); say('Bu hesabın admin icazəsi yoxdur.'); return; }
     $('login').hidden = true; $('tool').hidden = false;
     unlockForMe();
+    loadCustomers();
   } catch (e) {
     if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) return;
     say(e && e.code === 'auth/unauthorized-domain' ? 'Bu domen Firebase-də icazəli deyil.' : 'Giriş alınmadı.');
@@ -78,6 +87,38 @@ async function unlockForMe(){
     localStorage.setItem('an_ai_test_license', JSON.stringify({ code: d.code, expiry: d.expiry, tier: '1Y', admin: true }));
     $('mine').hidden = false;
   } catch {}
+}
+const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TIERS = { '1M': '1 Ay', '6M': '6 Ay', '1Y': '1 İl' };
+function fmtPhone(p){ return /^994\d{9}$/.test(p) ? '0' + p.slice(3, 5) + ' ' + p.slice(5, 8) + ' ' + p.slice(8, 10) + ' ' + p.slice(10) : p; }
+// Kodu aktivləşdirən müştərilərin siyahısı (yalnız admin oxuya bilir)
+async function loadCustomers(){
+  const list = $('custList');
+  try {
+    const idToken = await auth.currentUser.getIdToken();
+    const res = await fetch('https://an-psixoloji-33442-default-rtdb.firebaseio.com/ai_test_licenses.json?auth=' + encodeURIComponent(idToken));
+    if (!res.ok) { list.innerHTML = '<li>Siyahını oxumaq alınmadı.</li>'; return; }
+    const data = await res.json() || {};
+    const rows = Object.values(data).filter(r => r && r.phone).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    $('custCount').textContent = '(' + rows.length + ')';
+    if (!rows.length) { list.innerHTML = '<li>Hələ heç kim kod aktivləşdirməyib.</li>'; return; }
+    const now = Date.now();
+    list.innerHTML = rows.map(r => {
+      let status = '<span class="tag ok">aktiv</span>';
+      if (r.expiry) {
+        const days = Math.ceil((r.expiry - now) / 86400000);
+        if (days < 0) status = '<span class="tag bad">bitib</span>';
+        else if (days <= 7) status = '<span class="tag warn">' + days + ' gün qalıb</span>';
+        else status = '<span class="tag ok">' + days + ' gün qalıb</span>';
+      }
+      const wa = 'https://wa.me/' + esc(String(r.phone).replace(/\D/g, ''));
+      return '<li><b>' + esc(fmtPhone(r.phone)) + '</b>' + status +
+        '<br>Kod: ' + esc(r.code || '—') + (r.tier ? ' · ' + esc(TIERS[r.tier] || r.tier) : '') +
+        '<br>Aktivləşib: ' + (r.ts ? new Date(r.ts).toLocaleDateString('az-AZ') : '—') +
+        ' · Bitir: ' + (r.expiry ? new Date(r.expiry).toLocaleDateString('az-AZ') : '—') +
+        '<br><a href="' + wa + '" target="_blank" rel="noopener" style="color:#1f6b40;font-weight:700">WhatsApp-da yaz</a></li>';
+    }).join('');
+  } catch { list.innerHTML = '<li>Siyahını oxumaq alınmadı.</li>'; }
 }
 $('genBtn').onclick = async () => {
   say(''); $('genBtn').disabled = true;

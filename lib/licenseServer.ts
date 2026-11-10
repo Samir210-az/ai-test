@@ -108,7 +108,7 @@ export function isLifetime(v: VerifiedLicense): boolean {
 export type BindResult = 'ok' | 'new' | 'mismatch' | 'error';
 
 // activate=true olanda qeyd yoxdursa yaradılır; yoxdursa və activate=false-dursa rədd edilir.
-export async function checkBinding(code: string, phoneRaw: unknown, activate: boolean): Promise<BindResult> {
+export async function checkBinding(code: string, phoneRaw: unknown, activate: boolean, meta?: { tier?: string; expiry?: number }): Promise<BindResult> {
   const phone = normalizePhone(phoneRaw);
   if (!phone) return 'mismatch';
   const url = `${DB_URL}/ai_test_licenses/${bindingKey(code)}.json`;
@@ -118,7 +118,7 @@ export async function checkBinding(code: string, phoneRaw: unknown, activate: bo
     const rec = await res.json();
     if (rec && typeof rec.phone === 'string') return rec.phone === phone ? 'ok' : 'mismatch';
     if (!activate) return 'mismatch';
-    const put = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, ts: Date.now() }) });
+    const put = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, ts: Date.now(), code: code.trim().toUpperCase(), tier: meta?.tier || null, expiry: meta?.expiry || null }) });
     if (put.ok) return 'new';
     // Eyni anda başqası bağlayıbsa, yenidən oxu
     const again = await (await fetch(url, { cache: 'no-store' })).json();
