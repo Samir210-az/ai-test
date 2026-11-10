@@ -75,7 +75,7 @@ async function unlockForMe(){
     const res = await fetch('/api/license/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken, tier: 'ADMIN' }) });
     if (!res.ok) return;
     const d = await res.json();
-    localStorage.setItem('an_ai_test_license', JSON.stringify({ code: d.code, expiry: d.expiry, tier: '1Y' }));
+    localStorage.setItem('an_ai_test_license', JSON.stringify({ code: d.code, expiry: d.expiry, tier: '1Y', admin: true }));
     $('mine').hidden = false;
   } catch {}
 }

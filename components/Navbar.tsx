@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import ToggleLang from './ToggleLang';
-import { Suspense, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useScopedI18n } from '@/locales/client';
 
 export function Navbar() {
@@ -11,6 +11,23 @@ export function Navbar() {
   const t = useScopedI18n('component.navBar');
   const router = useRouter();
   const taps = useRef(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Admin ömürlük girişi bu cihazda aktivdirsə, "Çıxış" düyməsi görünür
+  useEffect(() => {
+    try {
+      const v = JSON.parse(localStorage.getItem('an_ai_test_license') || 'null');
+      setIsAdmin(!!(v && v.admin));
+    } catch {
+      setIsAdmin(false);
+    }
+  }, []);
+
+  const onAdminLogout = () => {
+    if (!window.confirm('Admin girişindən çıxmaq istəyirsiniz? Testlər bu cihazda yenidən kod istəyəcək.')) return;
+    localStorage.removeItem('an_ai_test_license');
+    window.location.href = '/';
+  };
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Loqoya 5 dəfə ardıcıl toxunuş admin səhifəsini açır; tək toxunuş əvvəlki kimi anket siyahısına aparır.
@@ -59,6 +76,16 @@ export function Navbar() {
           >
             {t('questionsList')}
           </Link>
+
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={onAdminLogout}
+              className="rounded-md border px-2.5 py-1 text-xs font-medium text-red-700 border-red-200 hover:bg-red-50"
+            >
+              🛡️ Admin · Çıxış
+            </button>
+          )}
 
           <Suspense fallback={<div className="w-8 h-8" />}>
             <ToggleLang />
