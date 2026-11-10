@@ -23,7 +23,9 @@ export default function QuestionnairePage({
   const [isLicensed, setIsLicensed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setIsLicensed(getStoredLicenseStatus().valid);
+    let alive = true;
+    getStoredLicenseStatus().then((st) => { if (alive) setIsLicensed(st.valid); });
+    return () => { alive = false; };
   }, []);
 
   // If data not found, show 404 page

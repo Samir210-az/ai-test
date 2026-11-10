@@ -33,12 +33,16 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
   const whatsappMessage = t('whatsappMessage', { tier: tierLabel, url: SITE_URL });
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 
-  const handleActivate = () => {
+  const [checking, setChecking] = useState(false);
+  const handleActivate = async () => {
     if (!phone.trim()) {
       setErrorType('phone');
       return;
     }
-    const result = activateLicenseCode(code, phone);
+    if (checking) return;
+    setChecking(true);
+    const result = await activateLicenseCode(code, phone);
+    setChecking(false);
     if (result.valid) {
       setErrorType(null);
       onLicenseActivated();

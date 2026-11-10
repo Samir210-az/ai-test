@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyLicense } from "@/lib/licenseServer";
 
 // Deepseek API Key - prioritize environment variables
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
@@ -115,6 +116,11 @@ export async function POST(request: NextRequest) {
     const forwarded = request.headers.get("x-forwarded-for");
     const realIp = request.headers.get("x-real-ip");
     const ip = forwarded ? forwarded.split(",")[0] : realIp || "unknown";
+
+    // AI yalnız etibarlı lisenziyası olan istifadəçilərə açıqdır
+    if (!verifyLicense(request.headers.get("x-license-code")).valid) {
+      return NextResponse.json({ error: "License required", message: "Lisenziya tələb olunur." }, { status: 403 });
+    }
 
     // Check IP rate limit
     if (!checkRateLimit(ip)) {

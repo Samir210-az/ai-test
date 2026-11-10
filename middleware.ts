@@ -20,6 +20,7 @@ export function middleware(request: NextRequest) {
     if (
         request.nextUrl.pathname === '/sitemap.xml' ||
         request.nextUrl.pathname === '/robots.txt' ||
+        request.nextUrl.pathname === '/admin-lisenziya.html' ||
         request.nextUrl.pathname === '/manifest.json' ||
         request.nextUrl.pathname === '/sw.js' ||
         request.nextUrl.pathname === '/apple-icon.png' ||
@@ -42,7 +43,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        "/((?!api|_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt|manifest\\.json|sw\\.js|apple-icon\\.png|icon0\\.svg|icon1\\.png|brand/).*)",
+        "/((?!api|_next/static|_next/image|favicon.ico|admin-lisenziya\\.html|sitemap\\.xml|robots\\.txt|manifest\\.json|sw\\.js|apple-icon\\.png|icon0\\.svg|icon1\\.png|brand/).*)",
         "/share/:path*"
     ],
 };
