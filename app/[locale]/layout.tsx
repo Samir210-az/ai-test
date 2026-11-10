@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const SITE_URL = 'https://ai-test-az.vercel.app';
+const SITE_URL = 'https://ai-test.aze-ai.az';
 
 export const metadata: Metadata = {
   title: 'AN - Pulsuz Psixi Sağlamlıq Qiymətləndirmə Vasitələri | Peşəkar Psixoloji Şkalalar',
