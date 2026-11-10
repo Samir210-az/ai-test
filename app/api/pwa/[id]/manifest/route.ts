@@ -9,6 +9,8 @@ export async function GET(
   const info = getPwaInfo(id);
   if (!info) return new NextResponse('Not found', { status: 404 });
 
+  const isApp = info.id === 'app';
+
   const icon = (size: number, maskable: boolean) => ({
     src: `/api/pwa/${info.id}/icon?size=${size}${maskable ? '&maskable=1' : ''}`,
     sizes: `${size}x${size}`,
@@ -17,12 +19,12 @@ export async function GET(
   });
 
   const manifest = {
-    id: `/questionnaire/${info.id}`,
+    id: isApp ? '/' : `/questionnaire/${info.id}`,
     name: info.title,
     short_name: info.shortName,
     description: info.title,
     lang: 'az',
-    start_url: `/questionnaire/${info.id}`,
+    start_url: isApp ? '/' : `/questionnaire/${info.id}`,
     scope: '/',
     display: 'standalone',
     orientation: 'portrait-primary',

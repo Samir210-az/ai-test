@@ -1,6 +1,7 @@
 import { questionnairesAz } from '@/questionairies/az';
 
 export function getPwaInfo(id: string) {
+  if (id === 'app') return { id: 'app', title: 'AI TEST', shortName: 'AI TEST' };
   const q = questionnairesAz.find((item) => item.id === id);
   if (!q) return null;
   const abbr = q.title.match(/\(([^)]+)\)\s*$/);
