@@ -1,35 +1,29 @@
 {
-  "name": "AN Psixoloji Dəstək və Reabilitasiya Mərkəzi - Psixoloji Qiymətləndirmə",
-  "short_name": "AN Mərkəzi",
+  "name": "AI TEST",
+  "short_name": "AI TEST",
   "description": "AN Psixoloji Dəstək və Reabilitasiya Mərkəzinin pulsuz psixoloji qiymətləndirmə platforması",
   "icons": [
     {
-      "src": "/share/icon1.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/api/pwa/app/icon?size=192",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/web-app-manifest-512x512.png",
+      "src": "/api/pwa/app/icon?size=512",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/share/apple-icon.png",
-      "sizes": "180x180",
+      "src": "/api/pwa/app/icon?size=512&maskable=1",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "maskable"
     }
   ],
-  "theme_color": "#9c1116",
-  "background_color": "#ffffff",
+  "theme_color": "#2B5EA8",
+  "background_color": "#0A1830",
   "display": "standalone",
   "start_url": "/",
   "scope": "/",

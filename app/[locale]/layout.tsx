@@ -30,7 +30,8 @@ export const metadata: Metadata = {
   ].join(', '),
   authors: [{ name: 'AN' }],
   creator: 'AN',
-  appleWebApp: { capable: true, title: 'AN' },
+  appleWebApp: { capable: true, title: 'AI TEST' },
+  icons: { apple: [{ url: '/api/pwa/app/icon?size=180', sizes: '180x180', type: 'image/png' }] },
   publisher: 'AN',
   formatDetection: {
     email: false,

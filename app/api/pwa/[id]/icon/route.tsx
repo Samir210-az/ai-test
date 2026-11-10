@@ -14,9 +14,11 @@ export async function GET(
   const size = Math.min(Math.max(parseInt(sp.get('size') || '192', 10) || 192, 48), 512);
   const maskable = sp.get('maskable') === '1';
 
-  const text = info.shortName;
+  const isApp = info.id === 'app';
+  const lines = info.shortName.split(' ');
+  const longest = Math.max(...lines.map((l) => l.length));
   const usable = size * (maskable ? 0.56 : 0.8);
-  const fontSize = Math.min(size * 0.34, usable / (text.length * 0.62));
+  const fontSize = Math.min(size * (lines.length > 1 ? 0.3 : 0.34), usable / (longest * 0.62));
 
   return new ImageResponse(
     (
@@ -33,19 +35,25 @@ export async function GET(
           borderRadius: maskable ? 0 : size * 0.2,
         }}
       >
-        <div style={{ fontSize, fontWeight: 800, letterSpacing: -1, display: 'flex' }}>{text}</div>
-        <div
-          style={{
-            display: 'flex',
-            marginTop: size * 0.04,
-            fontSize: size * 0.11,
-            fontWeight: 700,
-            color: '#7EC8FF',
-            letterSpacing: size * 0.01,
-          }}
-        >
-          AN
-        </div>
+        {lines.map((line) => (
+          <div key={line} style={{ fontSize, fontWeight: 800, letterSpacing: -1, display: 'flex', lineHeight: 1.1 }}>
+            {line}
+          </div>
+        ))}
+        {!isApp && (
+          <div
+            style={{
+              display: 'flex',
+              marginTop: size * 0.04,
+              fontSize: size * 0.11,
+              fontWeight: 700,
+              color: '#7EC8FF',
+              letterSpacing: size * 0.01,
+            }}
+          >
+            AN
+          </div>
+        )}
       </div>
     ),
     {
