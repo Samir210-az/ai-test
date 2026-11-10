@@ -18,6 +18,7 @@ export interface LicenseStatus {
   valid: boolean;
   expiryDate?: Date;
   tier?: LicenseTier;
+  reason?: 'phone' | 'server';
 }
 
 const TIER_LABELS: Record<LicenseTier, string> = {
@@ -27,17 +28,27 @@ const TIER_LABELS: Record<LicenseTier, string> = {
 };
 
 // Kod artıq brauzerdə yox, serverdə (/api/license) yoxlanır — gizli açar heç vaxt brauzerə gəlmir.
-async function checkOnServer(code: string, phone?: string, activate = false): Promise<{ valid: boolean; expiry?: number; tier?: LicenseTier }> {
+async function checkOnServer(code: string, phone?: string, activate = false): Promise<{ valid: boolean; expiry?: number; tier?: LicenseTier; reason?: 'phone' | 'server' }> {
   try {
     const res = await fetch('/api/license', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code, phone, activate }),
     });
-    if (!res.ok) return { valid: false };
-    return await res.json();
+    const data = await res.json().catch(() => ({ valid: false }));
+    return data;
   } catch {
     return { valid: false };
+  }
+}
+
+export function getStoredLicensePhone(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    return parsed && typeof parsed.phone === 'string' ? parsed.phone : '';
+  } catch {
+    return '';
   }
 }
 
@@ -57,7 +68,7 @@ export function getStoredLicenseCode(): string {
 export async function getStoredLicenseStatus(): Promise<LicenseStatus> {
   const code = getStoredLicenseCode();
   if (!code) return { valid: false };
-  const r = await checkOnServer(code);
+  const r = await checkOnServer(code, getStoredLicensePhone());
   if (!r.valid) return { valid: false };
   return { valid: true, expiryDate: r.expiry ? new Date(r.expiry) : undefined, tier: r.tier };
 }
@@ -68,8 +79,8 @@ export async function getStoredLicenseStatus(): Promise<LicenseStatus> {
 export async function activateLicenseCode(rawCode: string, phone: string): Promise<LicenseStatus> {
   const code = rawCode.trim().toUpperCase();
   const r = await checkOnServer(code, phone, true);
-  if (!r.valid || typeof window === 'undefined') return { valid: false };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ code, expiry: r.expiry, tier: r.tier }));
+  if (!r.valid || typeof window === 'undefined') return { valid: false, reason: r.reason };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ code, phone: phone.trim(), expiry: r.expiry, tier: r.tier }));
   const expiry = r.expiry ? new Date(r.expiry).toLocaleDateString('az-AZ') : '-';
   const tierLabel = r.tier ? TIER_LABELS[r.tier] : '-';
   void sgTrackEvent('license_activated', {

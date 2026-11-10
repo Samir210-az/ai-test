@@ -1,4 +1,4 @@
-import { getStoredLicenseCode } from './license';
+import { getStoredLicenseCode, getStoredLicensePhone } from './license';
 export interface AIStreamMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -31,7 +31,7 @@ export async function streamChatCompletion({
 }: StreamChatOptions): Promise<string> {
   const response = await fetch('/api/chat', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-license-code': getStoredLicenseCode() },
+    headers: { 'Content-Type': 'application/json', 'x-license-code': getStoredLicenseCode(), 'x-license-phone': getStoredLicensePhone() },
     body: JSON.stringify({
       model: 'deepseek-chat',
       messages,
