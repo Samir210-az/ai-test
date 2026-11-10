@@ -192,6 +192,8 @@ export default {
         phoneRequired: 'Zəhmət olmasa telefon nömrənizi daxil edin.',
         activateButton: 'Aktivləşdir',
         invalidCode: 'Kod yanlışdır və ya vaxtı bitib. Zəhmət olmasa yoxlayıb yenidən cəhd edin.',
+        codeBound: 'Bu kod başqa telefon nömrəsinə bağlıdır. Kodu aktivləşdirdiyiniz nömrəni yazın.',
+        serverError: 'Yoxlama alınmadı. Bir az sonra yenidən cəhd edin.',
         activeUntil: 'Lisenziyanız aktivdir. Bitmə tarixi: {date}',
     },
 } as const;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyLicense } from "@/lib/licenseServer";
+import { verifyLicense, checkBinding, isLifetime } from "@/lib/licenseServer";
 
 // Deepseek API Key - prioritize environment variables
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
@@ -118,7 +118,10 @@ export async function POST(request: NextRequest) {
     const ip = forwarded ? forwarded.split(",")[0] : realIp || "unknown";
 
     // AI yalnız etibarlı lisenziyası olan istifadəçilərə açıqdır
-    if (!verifyLicense(request.headers.get("x-license-code")).valid) {
+    const licCode = request.headers.get("x-license-code") || "";
+    const lic = verifyLicense(licCode);
+    const licOk = lic.valid && (isLifetime(lic) || (await checkBinding(licCode, request.headers.get("x-license-phone"), false)) === "ok");
+    if (!licOk) {
       return NextResponse.json({ error: "License required", message: "Lisenziya tələb olunur." }, { status: 403 });
     }
 

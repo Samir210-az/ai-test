@@ -27,7 +27,7 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
   const [selectedTier, setSelectedTier] = useState<LicenseTier>('1M');
   const [code, setCode] = useState('');
   const [phone, setPhone] = useState('');
-  const [errorType, setErrorType] = useState<'code' | 'phone' | null>(null);
+  const [errorType, setErrorType] = useState<'code' | 'phone' | 'bound' | 'server' | null>(null);
 
   const tierLabel = t(TIERS.find((tier) => tier.value === selectedTier)!.labelKey);
   const whatsappMessage = t('whatsappMessage', { tier: tierLabel, url: SITE_URL });
@@ -47,7 +47,7 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
       setErrorType(null);
       onLicenseActivated();
     } else {
-      setErrorType('code');
+      setErrorType(result.reason === 'phone' ? 'bound' : result.reason === 'server' ? 'server' : 'code');
     }
   };
 
@@ -122,6 +122,8 @@ export function LicenseGate({ onLicenseActivated }: LicenseGateProps) {
           </div>
           {errorType === 'code' && <p className="text-sm text-red-600 mt-2">{t('invalidCode')}</p>}
           {errorType === 'phone' && <p className="text-sm text-red-600 mt-2">{t('phoneRequired')}</p>}
+          {errorType === 'bound' && <p className="text-sm text-red-600 mt-2">{t('codeBound')}</p>}
+          {errorType === 'server' && <p className="text-sm text-red-600 mt-2">{t('serverError')}</p>}
         </div>
       </div>
     </div>

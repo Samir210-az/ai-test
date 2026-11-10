@@ -2,6 +2,8 @@
 // (LICENSE_SALT) and never reaches the browser, so codes cannot be minted
 // from the client bundle anymore.
 
+import { createHash } from 'crypto';
+
 export type LicenseTier = '1M' | '6M' | '1Y';
 export const DURATIONS: Record<LicenseTier, number> = { '1M': 30, '6M': 182, '1Y': 365 };
 
@@ -77,5 +79,51 @@ export async function notifyTelegram(text: string): Promise<void> {
     });
   } catch {
     /* bildiriş alınmasa da aktivləşdirmə dayanmır */
+  }
+}
+
+// ---- Kodun telefona bağlanması ----
+// Kod ilk aktivləşdirildiyi nömrəyə bağlanır; sonra yalnız həmin nömrə ilə işləyir.
+// Qeyd Firebase-də ai_test_licenses/{hash} altında saxlanır; açar kodun və gizli açarın
+// hash-idir, ona görə kodu bilməyən heç kim qeydi tapa və ya əvvəlcədən yarada bilməz.
+const DB_URL = 'https://an-psixoloji-33442-default-rtdb.firebaseio.com';
+
+export function normalizePhone(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  let d = raw.replace(/[^0-9]/g, '');
+  if (d.startsWith('00')) d = d.slice(2);
+  if (d.startsWith('994')) d = d.slice(3);
+  if (d.startsWith('0')) d = d.slice(1);
+  return /^[0-9]{9}$/.test(d) ? '994' + d : (d.length >= 7 && d.length <= 15 ? d : null);
+}
+
+function bindingKey(code: string): string {
+  return createHash('sha256').update(`${process.env.LICENSE_SALT || ''}|${code.trim().toUpperCase()}`).digest('hex');
+}
+
+export function isLifetime(v: VerifiedLicense): boolean {
+  return !!v.expiry && v.expiry - Date.now() > 20 * 365 * 86400000;
+}
+
+export type BindResult = 'ok' | 'new' | 'mismatch' | 'error';
+
+// activate=true olanda qeyd yoxdursa yaradılır; yoxdursa və activate=false-dursa rədd edilir.
+export async function checkBinding(code: string, phoneRaw: unknown, activate: boolean): Promise<BindResult> {
+  const phone = normalizePhone(phoneRaw);
+  if (!phone) return 'mismatch';
+  const url = `${DB_URL}/ai_test_licenses/${bindingKey(code)}.json`;
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) return 'error';
+    const rec = await res.json();
+    if (rec && typeof rec.phone === 'string') return rec.phone === phone ? 'ok' : 'mismatch';
+    if (!activate) return 'mismatch';
+    const put = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, ts: Date.now() }) });
+    if (put.ok) return 'new';
+    // Eyni anda başqası bağlayıbsa, yenidən oxu
+    const again = await (await fetch(url, { cache: 'no-store' })).json();
+    return again && again.phone === phone ? 'ok' : 'mismatch';
+  } catch {
+    return 'error';
   }
 }
