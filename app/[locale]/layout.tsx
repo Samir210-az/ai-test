@@ -30,6 +30,7 @@ export const metadata: Metadata = {
   ].join(', '),
   authors: [{ name: 'AN' }],
   creator: 'AN',
+  appleWebApp: { capable: true, title: 'AN' },
   publisher: 'AN',
   formatDetection: {
     email: false,
@@ -127,7 +128,6 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <meta name="apple-mobile-web-app-title" content="AN" />
 
         {/* Additional social media optimization */}
         <meta property="og:image:type" content="image/png" />
