@@ -113,7 +113,7 @@ export async function GET(
       width: size,
       height: size,
       fonts: [{ name: 'Inter', data: font, weight: 800, style: 'normal' }],
-      headers: { 'Cache-Control': 'public, max-age=86400' },
+      headers: { 'Cache-Control': 'public, max-age=300, s-maxage=300' },
     },
   );
 }
