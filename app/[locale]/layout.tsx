@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'AN' }],
   creator: 'AN',
   appleWebApp: { capable: true, title: 'AI TEST' },
-  icons: { apple: [{ url: '/api/pwa/app/icon?size=180', sizes: '180x180', type: 'image/png' }] },
+  icons: { apple: [{ url: '/api/pwa/app/icon?size=180&v=3', sizes: '180x180', type: 'image/png' }] },
   publisher: 'AN',
   formatDetection: {
     email: false,

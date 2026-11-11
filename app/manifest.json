@@ -4,19 +4,19 @@
   "description": "AN Psixoloji Dəstək və Reabilitasiya Mərkəzinin pulsuz psixoloji qiymətləndirmə platforması",
   "icons": [
     {
-      "src": "/api/pwa/app/icon?size=192",
+      "src": "/api/pwa/app/icon?size=192&v=3",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/api/pwa/app/icon?size=512",
+      "src": "/api/pwa/app/icon?size=512&v=3",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/api/pwa/app/icon?size=512&maskable=1",
+      "src": "/api/pwa/app/icon?size=512&maskable=1&v=3",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
