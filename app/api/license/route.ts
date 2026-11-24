@@ -41,8 +41,9 @@ export async function POST(request: NextRequest) {
     if (bind === "new") {
       const phone = typeof body.phone === "string" ? body.phone.trim().slice(0, 30) : "-";
       const expiry = result.expiry ? new Date(result.expiry).toLocaleDateString("az-AZ") : "-";
+      const isCbt = body.product === "cbt1";
       await notifyTelegram(
-        `🔑 Lisenziya aktivləşdirildi — ${body.product === "cbt1" ? "Cbt1" : "ai-test (AN)"}\nKod: ${code}\nMüddət: ${result.tier ? TIER_LABELS[result.tier] : "-"}\nBitmə tarixi: ${expiry}\nTelefon: ${phone}`
+        `🔑 Lisenziya aktivləşdirildi — ${isCbt ? "Cbt1" : "ai-test (AN)"}\nKod: ${code}\nMüddət: ${result.tier ? TIER_LABELS[result.tier] : "-"}\nBitmə tarixi: ${expiry}\nTelefon: ${phone}\nLink: ${isCbt ? "https://cbt.aze-ai.az" : "https://ai-test.aze-ai.az"}`
       );
     }
   }
