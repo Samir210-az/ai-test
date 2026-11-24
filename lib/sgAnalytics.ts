@@ -111,5 +111,5 @@ export function sgTrackPageView(path: string) {
 // Fired once per completed assessment, final score/severity only - no
 // per-question data, matching how the other 37 repos report test results.
 export function sgTrackTest(testName: string, result: string) {
-  void sgTrackEvent('test_result', { test: testName, result });
+  void sgTrackEvent('test_result', { test: testName, result, host: window.location.hostname });
 }
